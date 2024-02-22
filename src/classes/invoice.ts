@@ -4,7 +4,7 @@ export default class Invoice {
     constructor(
         private readonly _number: number,
         private readonly _serial: number,
-        private readonly _key: number,
+        private readonly _key: string,
         private readonly _operation: string,
         private readonly _emission: string,
         private readonly _sender: Person,
@@ -20,7 +20,7 @@ export default class Invoice {
         return this._serial;
     }
 
-    get key(): number {
+    get key(): string {
         return this._key;
     }
 

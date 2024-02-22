@@ -10,7 +10,7 @@ export default class InvoiceBuilder {
     private _operation: string = 'N/A';
     private _number: number = 0;
     private _serial: number = 0;
-    private _key: number = 0;
+    private _key: string = 'N/A';
     private _emission: string = 'N/A';
     private _sender: Person | null = null;
     private _recipient: Person | null = null;
@@ -51,8 +51,7 @@ export default class InvoiceBuilder {
 
         const rawKey = keyPath[0].getAttribute('Id');
         if (rawKey) {
-            const key = rawKey.substring(3);
-            this._key = Number(key);
+            this._key = rawKey.substring(3);
         }
 
         return this;
