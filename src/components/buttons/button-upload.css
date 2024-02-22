@@ -1,0 +1,27 @@
+.button-upload {
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 200px;
+    height: 200px;
+    border-radius: 40px;
+
+    box-shadow: 0 0 50px var(--second-color);
+    background-color: var(--second-color);
+
+    transition: all 200ms ease-in-out;
+}
+
+.button-upload:hover {
+    box-shadow: 0 0 100px var(--second-color);
+}
+
+.icon-upload {
+    filter: drop-shadow(0 0 10px #fcfd2e);
+    transition: all 200ms ease-in-out;
+}
+
+.icon-upload:hover {
+    filter: drop-shadow(0 0 20px #fcfd2e);
+}

@@ -1,0 +1,10 @@
+.main-content {
+    width: 100%;
+    height: auto;
+    padding: 80px 235px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--background-color-dark);
+}
