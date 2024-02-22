@@ -1,0 +1,60 @@
+export default class Product {
+    constructor(
+        private readonly _name: string,
+        private readonly _ncm: string,
+        private readonly _cfop: string,
+        private readonly _un: string,
+        private readonly _amount: string,
+        private readonly _unitPrice: string,
+        private readonly _totalPrice: string,
+        private readonly _aliquotIcms: string,
+        private readonly _aliquotIpi: string,
+
+        private readonly _csosn?: string,
+        private readonly _cst?: string,
+    ) {}
+
+    get name(): string {
+        return this._name;
+    }
+
+    get ncm(): string {
+        return this._ncm;
+    }
+
+    get cfop(): string {
+        return this._cfop;
+    }
+
+    get unit(): string {
+        return this._un;
+    }
+
+    get amount(): string {
+        return this._amount;
+    }
+
+    get unitPrice(): string {
+        return this._unitPrice;
+    }
+
+    get totalPrice(): string {
+        return this._totalPrice;
+    }
+
+    get aliquotIcms(): string {
+        return this._aliquotIcms;
+    }
+
+    get aliquotIpi(): string {
+        return this._aliquotIpi;
+    }
+
+    get taxCode(): string | undefined {
+        if (this._csosn) {
+            return this._csosn;
+        } else {
+            return this._cst;
+        }
+    }
+}

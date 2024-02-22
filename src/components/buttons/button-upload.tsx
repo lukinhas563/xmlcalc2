@@ -11,7 +11,6 @@ export default function ButtonUpload() {
         } else {
             windowInput.classList.add('open-closed');
         }
-        console.log(windowInput.classList[1]);
     }
 
     return (
