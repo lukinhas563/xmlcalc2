@@ -1,8 +1,8 @@
 'use client';
 import { ChangeEvent } from 'react';
-import './window-input.css';
 import DocumentBuilder from '@/classes/document-builder';
 import InvoiceBuilder from '@/classes/invoice-builder';
+import './window-input.css';
 
 export default function WindowInput() {
     function handleClosed(e) {

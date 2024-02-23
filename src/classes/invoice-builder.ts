@@ -85,32 +85,33 @@ export default class InvoiceBuilder {
     }
 
     makeSender(): this {
-        const pathEmit = this._document.getElementsByTagName(this._paths[4]);
+        const pathDest = this._document.getElementsByTagName(this._paths[4]);
 
-        if (pathEmit[0].getElementsByTagName('CNPJ')) {
+        if (pathDest[0].getElementsByTagName('CNPJ').length > 0) {
             const cnpj =
-                pathEmit[0].getElementsByTagName('CNPJ')[0]?.textContent ||
+                pathDest[0].getElementsByTagName('CNPJ')[0]?.textContent ||
                 'N/A';
             const name =
-                pathEmit[0].getElementsByTagName('xNome')[0]?.textContent ||
+                pathDest[0].getElementsByTagName('xNome')[0]?.textContent ||
                 'N/A';
             const fantasyName =
-                pathEmit[0].getElementsByTagName('xFant')[0]?.textContent ||
+                pathDest[0].getElementsByTagName('xFant')[0]?.textContent ||
                 'N/A';
 
             // MAKE ADDRESS
             const addressPath =
-                pathEmit[0].getElementsByTagName('enderEmit')[0];
+                pathDest[0].getElementsByTagName('enderEmit')[0];
             const address = this.makeAddress(addressPath);
 
             //RETURN PERSON
             this._sender = new LegalPerson(name, address, fantasyName, cnpj);
         } else {
             const cpf =
-                pathEmit[0].getElementsByTagName('CNPJ')[0]?.textContent ||
+                pathDest[0].getElementsByTagName('CPF')[0]?.textContent ||
                 'N/A';
+
             const fullName =
-                pathEmit[0].getElementsByTagName('xNome')[0]?.textContent ||
+                pathDest[0].getElementsByTagName('xNome')[0]?.textContent ||
                 'N/A';
 
             //  SPLIT NAME/LASTNAME
@@ -119,7 +120,7 @@ export default class InvoiceBuilder {
 
             // MAKE ADDRESS
             const addressPath =
-                pathEmit[0].getElementsByTagName('enderEmit')[0];
+                pathDest[0].getElementsByTagName('enderEmit')[0];
             const address = this.makeAddress(addressPath);
 
             // RETURN PERSON
@@ -132,7 +133,7 @@ export default class InvoiceBuilder {
     makeRecipient(): this {
         const pathEmit = this._document.getElementsByTagName(this._paths[5]);
 
-        if (pathEmit[0].getElementsByTagName('CNPJ')) {
+        if (pathEmit[0].getElementsByTagName('CNPJ').length > 0) {
             const cnpj =
                 pathEmit[0].getElementsByTagName('CNPJ')[0]?.textContent ||
                 'N/A';
@@ -152,8 +153,9 @@ export default class InvoiceBuilder {
             this._recipient = new LegalPerson(name, address, fantasyName, cnpj);
         } else {
             const cpf =
-                pathEmit[0].getElementsByTagName('CNPJ')[0]?.textContent ||
+                pathEmit[0].getElementsByTagName('CPF')[0]?.textContent ||
                 'N/A';
+
             const fullName =
                 pathEmit[0].getElementsByTagName('xNome')[0]?.textContent ||
                 'N/A';
