@@ -5,8 +5,6 @@ import Product from './product';
 import { FisicalPerson, LegalPerson } from './persons';
 
 export default class InvoiceBuilder {
-    private readonly _invoices: Invoice[] = [];
-
     private _operation: string = 'N/A';
     private _number: number = 0;
     private _serial: number = 0;
@@ -15,6 +13,8 @@ export default class InvoiceBuilder {
     private _sender: Person | null = null;
     private _recipient: Person | null = null;
     private _product: Product | null = null;
+
+    private _invoice: Invoice = null;
 
     private readonly _paths: string[] = [
         'ide',
@@ -25,6 +25,7 @@ export default class InvoiceBuilder {
         'dest',
         'prod',
         'imposto',
+        'det',
     ];
 
     constructor(private readonly _document: Document) {}
@@ -181,11 +182,75 @@ export default class InvoiceBuilder {
         return this;
     }
 
-    makeProduct(): this {
-        return this;
+    makeProduct(): Invoice {
+        const pathProducts = this._document.getElementsByTagName(
+            this._paths[8],
+        );
+
+        for (let i = 0; i < pathProducts.length; i++) {
+            const prodName =
+                pathProducts[i]
+                    .getElementsByTagName('prod')[0]
+                    .getElementsByTagName('xProd')[0]?.textContent || 'N/A';
+
+            const prodNcm =
+                pathProducts[i]
+                    .getElementsByTagName('prod')[0]
+                    .getElementsByTagName('NCM')[0]?.textContent || 'N/A';
+
+            const prodCfop =
+                pathProducts[i]
+                    .getElementsByTagName('prod')[0]
+                    .getElementsByTagName('CFOP')[0]?.textContent || 'N/A';
+
+            const prodUnit =
+                pathProducts[i]
+                    .getElementsByTagName('prod')[0]
+                    .getElementsByTagName('uCom')[0]?.textContent || 'N/A';
+
+            const prodAmount =
+                pathProducts[i]
+                    .getElementsByTagName('prod')[0]
+                    .getElementsByTagName('indTot')[0]?.textContent || 'N/A';
+
+            const prodUnitPrice =
+                pathProducts[i]
+                    .getElementsByTagName('prod')[0]
+                    .getElementsByTagName('vUnCom')[0]?.textContent || 'N/A';
+
+            const prodTotalPrice =
+                pathProducts[i]
+                    .getElementsByTagName('prod')[0]
+                    .getElementsByTagName('vProd')[0]?.textContent || 'N/A';
+
+            // TAX
+            const prodAliqIcms = '0';
+            const prodAliqIpi = '0';
+            const csosn = '0';
+
+            // Make Product
+            const product = new Product(
+                prodName,
+                prodNcm,
+                prodCfop,
+                prodUnit,
+                prodAmount,
+                prodUnitPrice,
+                prodTotalPrice,
+                prodAliqIcms,
+                prodAliqIpi,
+                csosn,
+            );
+
+            if (this._invoice !== null) {
+                this._invoice.addProduct(product);
+            }
+        }
+
+        return this._invoice;
     }
 
-    build(): Invoice | undefined {
+    makeInvoice(): this {
         if (this._sender !== null && this._recipient !== null) {
             const invoice = new Invoice(
                 this._number,
@@ -197,7 +262,8 @@ export default class InvoiceBuilder {
                 this._recipient,
             );
 
-            return invoice;
+            this._invoice = invoice;
         }
+        return this;
     }
 }

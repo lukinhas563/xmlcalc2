@@ -1,4 +1,5 @@
 import { Person } from '@/interfaces/person-protocol';
+import Product from './product';
 
 export default class Invoice {
     constructor(
@@ -9,7 +10,7 @@ export default class Invoice {
         private readonly _emission: string,
         private readonly _sender: Person,
         private readonly _recipient: Person,
-        private readonly _products: string[] = [],
+        private readonly _products: Product[] = [],
     ) {}
 
     get number(): number {
@@ -40,7 +41,11 @@ export default class Invoice {
         return this._recipient;
     }
 
-    get products(): string[] {
+    get products(): Product[] {
         return this._products;
+    }
+
+    addProduct(product: Product): void {
+        this.products.push(product);
     }
 }

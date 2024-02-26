@@ -11,8 +11,12 @@ export default class InvoiceDirector {
             console.log('Documento Unico');
 
             const invoiceBuilder = new InvoiceBuilder(document);
-            invoiceBuilder.makeInfo().makeSender().makeRecipient();
-            const invoice = invoiceBuilder.build();
+            const invoice = invoiceBuilder
+                .makeInfo()
+                .makeSender()
+                .makeRecipient()
+                .makeInvoice()
+                .makeProduct();
 
             return invoice;
         } else {
@@ -21,7 +25,12 @@ export default class InvoiceDirector {
             document.forEach((document) => {
                 const invoiceBuilder = new InvoiceBuilder(document);
                 invoiceBuilder.makeInfo().makeSender().makeRecipient();
-                const invoice = invoiceBuilder.build();
+                const invoice = invoiceBuilder
+                    .makeInfo()
+                    .makeSender()
+                    .makeRecipient()
+                    .makeInvoice()
+                    .makeProduct();
 
                 if (invoice !== undefined) {
                     this._Invoices.push(invoice);
