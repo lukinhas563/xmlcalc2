@@ -2,6 +2,7 @@
 import { ChangeEvent } from 'react';
 import DocumentBuilder from '@/classes/document-builder';
 import InvoiceDirector from '@/classes/invoice-director';
+import { SaveService } from '@/services/save';
 import './window-input.css';
 
 export default function WindowInput() {
@@ -30,7 +31,12 @@ export default function WindowInput() {
                 .build();
 
             const director = new InvoiceDirector();
-            const invoices = director.construct(document);
+            const invoices = director.constructInvoice(document);
+
+            if (invoices !== undefined) {
+                const saveService = new SaveService();
+                saveService.saveOnLocalStorage(invoices);
+            }
 
             console.log(invoices);
         }
