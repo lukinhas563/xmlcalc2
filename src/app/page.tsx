@@ -1,6 +1,6 @@
 import ButtonUpload from '@/components/buttons/button-upload';
-import MainTable from '@/components/table/table';
 import WindowInput from '@/components/window/window-input';
+import MainTable from '@/components/table/table';
 
 export default function Home() {
     return (

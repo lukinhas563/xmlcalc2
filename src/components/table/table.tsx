@@ -1,38 +1,22 @@
 'use client';
-import { useEffect } from 'react';
+
+import React, { useState } from 'react';
 import './table.css';
 
 export default function MainTable() {
-    function handleTableClick(e: MouseEvent) {
-        if (!e.currentTarget) {
-            return;
-        }
+    const [expanded, setExpanded] = useState(false);
+    const [menuVisible, setMenuVisible] = useState(false);
 
-        const nextLine = e.currentTarget.nextSibling as HTMLTableRowElement;
-
-        if (nextLine.firstChild) {
-            const expansiveLine = nextLine.firstChild
-                .firstChild as HTMLDivElement;
-
-            if (expansiveLine.classList[1] !== 'expansive') {
-                expansiveLine.classList.add('expansive');
-            } else {
-                expansiveLine.classList.remove('expansive');
-            }
+    function handleTableClick() {
+        if (typeof window !== 'undefined') {
+            setExpanded((prevExpanded) => !prevExpanded);
         }
     }
 
-    function handleOptionClick(e) {
-        e.stopPropagation();
-
-        const expansiveMenu = e.currentTarget.querySelector(
-            '.table-menu',
-        ) as HTMLDivElement;
-
-        if (expansiveMenu.classList[1] !== 'expansive-menu') {
-            expansiveMenu.classList.add('expansive-menu');
-        } else {
-            expansiveMenu.classList.remove('expansive-menu');
+    function handleOptionClick(e: React.MouseEvent) {
+        if (typeof window !== 'undefined') {
+            e.stopPropagation();
+            setMenuVisible((prevExpanded) => !prevExpanded);
         }
     }
 
@@ -75,7 +59,9 @@ export default function MainTable() {
                         onClick={(e) => handleOptionClick(e)}
                     >
                         ⋮{' '}
-                        <div className="table-menu">
+                        <div
+                            className={`table-menu ${menuVisible && 'expansive-menu'}`}
+                        >
                             <ul className="table-menu-options">
                                 <li>
                                     <span className="menu-download"></span>
@@ -93,7 +79,9 @@ export default function MainTable() {
                 </tr>
                 <tr className="table-expansiveline ">
                     <td colSpan={8}>
-                        <div className="expansiveline ">
+                        <div
+                            className={`expansiveline ${expanded && 'expansive'}`}
+                        >
                             <div className="expansiveline-container-content">
                                 <div className="details-container">
                                     <div className="details-header">
@@ -234,26 +222,28 @@ export default function MainTable() {
                                         </p>
                                     </div>
                                     <table className="tax-list">
-                                        <tr>
-                                            <td>BC</td>
-                                            <td>R$ 120,50</td>
-                                        </tr>
-                                        <tr>
-                                            <td>DESCONTO</td>
-                                            <td>R$ 0,00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>ICMS</td>
-                                            <td>R$ 15,00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>DIFAL</td>
-                                            <td>R$ 05,00</td>
-                                        </tr>
-                                        <tr>
-                                            <td>IPI</td>
-                                            <td>R$ 0,00</td>
-                                        </tr>
+                                        <tbody>
+                                            <tr>
+                                                <td>BC</td>
+                                                <td>R$ 120,50</td>
+                                            </tr>
+                                            <tr>
+                                                <td>DESCONTO</td>
+                                                <td>R$ 0,00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>ICMS</td>
+                                                <td>R$ 15,00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>DIFAL</td>
+                                                <td>R$ 05,00</td>
+                                            </tr>
+                                            <tr>
+                                                <td>IPI</td>
+                                                <td>R$ 0,00</td>
+                                            </tr>
+                                        </tbody>
                                     </table>
 
                                     <div className="tax-sum">
@@ -299,36 +289,6 @@ export default function MainTable() {
                                 </tbody>
                             </table>
                         </div>
-                    </td>
-                </tr>
-                <tr className="table-line">
-                    <td className="table-input table-line-input">
-                        <input type="checkbox" id="table-checkbox-2" />
-                        <label htmlFor="table-checkbox-2"></label>
-                    </td>
-                    <td>321</td>
-                    <td>CARLOS MANUEL COSTA SILVA</td>
-                    <td>11.111.111/0001-11</td>
-                    <td>32 de Dez. de 2025</td>
-                    <td>120,50</td>
-                    <td>Autorizado</td>
-                    <td className="table-options">
-                        ⋮ <div className="table-menu"></div>
-                    </td>
-                </tr>
-                <tr>
-                    <td className="table-input table-line-input">
-                        <input type="checkbox" id="table-checkbox-3" />
-                        <label htmlFor="table-checkbox-3"></label>
-                    </td>
-                    <td>321</td>
-                    <td>CARLOS MANUEL COSTA SILVA</td>
-                    <td>11.111.111/0001-11</td>
-                    <td>32 de Dez. de 2025</td>
-                    <td>120,50</td>
-                    <td>Autorizado</td>
-                    <td className="table-options">
-                        ⋮ <div className="table-menu"></div>
                     </td>
                 </tr>
             </tbody>
