@@ -185,7 +185,7 @@ export default class InvoiceBuilder {
         return this;
     }
 
-    build(): void {
+    build(): Invoice | undefined {
         if (this._sender !== null && this._recipient !== null) {
             const invoice = new Invoice(
                 this._number,
@@ -197,7 +197,7 @@ export default class InvoiceBuilder {
                 this._recipient,
             );
 
-            console.log(invoice);
+            return invoice;
         }
     }
 }

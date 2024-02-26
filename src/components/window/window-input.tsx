@@ -3,6 +3,7 @@ import { ChangeEvent } from 'react';
 import DocumentBuilder from '@/classes/document-builder';
 import InvoiceBuilder from '@/classes/invoice-builder';
 import './window-input.css';
+import InvoiceDirector from '@/classes/invoice-director';
 
 export default function WindowInput() {
     function handleClosed(e) {
@@ -21,16 +22,18 @@ export default function WindowInput() {
 
     async function handleFile(e: ChangeEvent<HTMLInputElement>) {
         if (e.target.files && e.target.files.length > 0) {
-            const file = e.target.files[0];
+            const files = e.target.files;
 
             const documentBuilder = new DocumentBuilder();
-            const document = (await documentBuilder.readFile(file))
+
+            const document = (await documentBuilder.readFile(files))
                 .parseFile()
                 .build();
 
-            const invoiceBuilder = new InvoiceBuilder(document);
-            invoiceBuilder.makeInfo().makeSender().makeRecipient();
-            invoiceBuilder.build();
+            const director = new InvoiceDirector();
+            const invoices = director.construct(document);
+
+            console.log(invoices);
         }
     }
 
@@ -38,7 +41,7 @@ export default function WindowInput() {
         <div className="form-background ">
             <form className="form-container">
                 <button onClick={(e) => handleClosed(e)}>CLOSED</button>
-                <input type="file" onChange={(e) => handleFile(e)} />
+                <input type="file" multiple onChange={(e) => handleFile(e)} />
             </form>
         </div>
     );
