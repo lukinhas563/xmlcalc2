@@ -8,6 +8,7 @@ export default class Invoice {
         private readonly _key: string,
         private readonly _operation: string,
         private readonly _emission: string,
+        private readonly _status: string,
         private readonly _sender: Person,
         private readonly _recipient: Person,
         private readonly _products: Product[] = [],
@@ -33,6 +34,10 @@ export default class Invoice {
         return this._emission;
     }
 
+    get status(): string {
+        return this._status;
+    }
+
     get sender(): Person {
         return this._sender;
     }
@@ -43,6 +48,15 @@ export default class Invoice {
 
     get products(): Product[] {
         return this._products;
+    }
+
+    get totalPrice(): number {
+        if (this.products) {
+            return this._products.reduce(
+                (total, next) => total + next.totalPrice,
+                0,
+            );
+        }
     }
 
     addProduct(product: Product): void {

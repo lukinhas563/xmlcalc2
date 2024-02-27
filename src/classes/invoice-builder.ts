@@ -10,6 +10,7 @@ export default class InvoiceBuilder {
     private _serial: number = 0;
     private _key: string = 'N/A';
     private _emission: string = 'N/A';
+    private _status: string = 'N/A';
     private _sender: Person | null = null;
     private _recipient: Person | null = null;
     private _product: Product | null = null;
@@ -26,6 +27,7 @@ export default class InvoiceBuilder {
         'prod',
         'imposto',
         'det',
+        'protNFe',
     ];
 
     constructor(private readonly _document: Document) {}
@@ -33,6 +35,7 @@ export default class InvoiceBuilder {
     makeInfo(): this {
         const path = this._document.getElementsByTagName(this._paths[0]);
         const keyPath = this._document.getElementsByTagName(this._paths[1]);
+        const statusPath = this._document.getElementsByTagName(this._paths[9]);
 
         // STRINGS
         this._operation =
@@ -40,6 +43,16 @@ export default class InvoiceBuilder {
 
         this._emission =
             path[0].getElementsByTagName('dhEmi')[0]?.textContent || 'N/A';
+
+        const status =
+            statusPath[0]
+                .getElementsByTagName('infProt')[0]
+                .getElementsByTagName('cStat')[0]?.textContent || 'N/A';
+        if (status === '100') {
+            this._status = 'Autorizado';
+        } else {
+            this._status = 'Cancelado';
+        }
 
         // NUMBERS
         const number =
@@ -234,9 +247,9 @@ export default class InvoiceBuilder {
                 prodNcm,
                 prodCfop,
                 prodUnit,
-                prodAmount,
-                prodUnitPrice,
-                prodTotalPrice,
+                Number(prodAmount),
+                Number(prodUnitPrice),
+                Number(prodTotalPrice),
                 prodAliqIcms,
                 prodAliqIpi,
                 csosn,
@@ -258,6 +271,7 @@ export default class InvoiceBuilder {
                 this._key,
                 this._operation,
                 this._emission,
+                this._status,
                 this._sender,
                 this._recipient,
             );

@@ -4,9 +4,9 @@ export default class Product {
         private readonly _ncm: string,
         private readonly _cfop: string,
         private readonly _un: string,
-        private readonly _amount: string,
-        private readonly _unitPrice: string,
-        private readonly _totalPrice: string,
+        private readonly _amount: number,
+        private readonly _unitPrice: number,
+        private readonly _totalPrice: number,
         private readonly _aliquotIcms: string,
         private readonly _aliquotIpi: string,
 
@@ -30,15 +30,15 @@ export default class Product {
         return this._un;
     }
 
-    get amount(): string {
+    get amount(): number {
         return this._amount;
     }
 
-    get unitPrice(): string {
+    get unitPrice(): number {
         return this._unitPrice;
     }
 
-    get totalPrice(): string {
+    get totalPrice(): number {
         return this._totalPrice;
     }
 

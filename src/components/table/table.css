@@ -1,3 +1,5 @@
+@import url('./table-options/table-option-list.css');
+
 .main-table {
     color: var(--font-color);
     width: 100%;
@@ -46,7 +48,7 @@
 
 /* TABLE LINES */
 .table-line {
-    border-bottom: 1px solid #d1d3d7;
+    /*  border-bottom: 1px solid #d1d3d7;*/
     cursor: pointer;
 }
 
@@ -64,82 +66,6 @@
 .table-options {
     cursor: pointer;
     position: relative;
-}
-
-.table-menu {
-    position: absolute;
-
-    top: 35px;
-    right: 30px;
-
-    width: 160px;
-    height: auto;
-    overflow: hidden;
-
-    border-radius: 3px;
-    border: 0 solid #d1d3d7;
-    background-color: var(--background-color);
-
-    max-height: 0;
-    transition: all 200ms ease-in-out;
-}
-
-.expansive-menu {
-    max-height: 200px;
-    border: 1px solid #d1d3d7;
-}
-.table-menu-options {
-    height: 100%;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-}
-.table-menu-options li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    height: 50px;
-
-    border-bottom: 1px solid #d1d3d7;
-    padding: 0 10px;
-
-    transition: background-color 100ms ease-in-out;
-}
-.table-menu-options li:hover {
-    background-color: var(--background-color-dark);
-}
-
-.menu-delete-content {
-    color: #fe5858;
-}
-.menu-delete {
-    height: 30px;
-    width: 30px;
-
-    background-image: url("data:image/svg+xml,%3Csvg fill='%23fe5858' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' stroke='%23fe5858'%3E%3Cg id='SVGRepo_bgCarrier' stroke-width='0'%3E%3C/g%3E%3Cg id='SVGRepo_tracerCarrier' stroke-linecap='round' stroke-linejoin='round'%3E%3C/g%3E%3Cg id='SVGRepo_iconCarrier'%3E%3Cpath d='M5.755,20.283,4,8H20L18.245,20.283A2,2,0,0,1,16.265,22H7.735A2,2,0,0,1,5.755,20.283ZM21,4H16V3a1,1,0,0,0-1-1H9A1,1,0,0,0,8,3V4H3A1,1,0,0,0,3,6H21a1,1,0,0,0,0-2Z'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
-    background-size: 20px;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-.menu-edit {
-    height: 30px;
-    width: 30px;
-
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='SVGRepo_bgCarrier' stroke-width='0'%3E%3C/g%3E%3Cg id='SVGRepo_tracerCarrier' stroke-linecap='round' stroke-linejoin='round'%3E%3C/g%3E%3Cg id='SVGRepo_iconCarrier'%3E%3Cpath d='M12 3.99997H6C4.89543 3.99997 4 4.8954 4 5.99997V18C4 19.1045 4.89543 20 6 20H18C19.1046 20 20 19.1045 20 18V12M18.4142 8.41417L19.5 7.32842C20.281 6.54737 20.281 5.28104 19.5 4.5C18.7189 3.71895 17.4526 3.71895 16.6715 4.50001L15.5858 5.58575M18.4142 8.41417L12.3779 14.4505C12.0987 14.7297 11.7431 14.9201 11.356 14.9975L8.41422 15.5858L9.00257 12.6441C9.08001 12.2569 9.27032 11.9013 9.54951 11.6221L15.5858 5.58575M18.4142 8.41417L15.5858 5.58575' stroke='%23313B45' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
-    background-size: 20px;
-    background-repeat: no-repeat;
-    background-position: center;
-}
-.menu-download {
-    height: 30px;
-    width: 30px;
-
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cg id='SVGRepo_bgCarrier' stroke-width='0'%3E%3C/g%3E%3Cg id='SVGRepo_tracerCarrier' stroke-linecap='round' stroke-linejoin='round'%3E%3C/g%3E%3Cg id='SVGRepo_iconCarrier'%3E%3Cpath d='M12 16L12 8' stroke='%23313B45' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3C/path%3E%3Cpath d='M9 13L11.913 15.913V15.913C11.961 15.961 12.039 15.961 12.087 15.913V15.913L15 13' stroke='%23313B45' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3C/path%3E%3Cpath d='M3 15L3 16L3 19C3 20.1046 3.89543 21 5 21L19 21C20.1046 21 21 20.1046 21 19L21 16L21 15' stroke='%23313B45' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3C/path%3E%3C/g%3E%3C/svg%3E");
-    background-size: 20px;
-    background-repeat: no-repeat;
-    background-position: center;
 }
 
 /* EXPANSIVE */
