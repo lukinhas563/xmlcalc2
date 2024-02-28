@@ -1,11 +1,33 @@
+import Invoice from '@/classes/invoice';
+import { SaveService } from '@/services/save';
+
 interface OptionsProps {
     toggle: boolean;
     index: number;
+    invoices: Invoice[];
+    setInvoices: React.Dispatch<
+        React.SetStateAction<Invoice | Invoice[] | undefined>
+    >;
 }
 
-export default function TableOptions({ toggle, index }: OptionsProps) {
-    const handleClick = (e: MouseEvent) => {
-        console.log(index);
+export default function TableOptions({
+    toggle,
+    index,
+    invoices,
+    setInvoices,
+}: OptionsProps) {
+    const handleDelete = (e: MouseEvent) => {
+        const newInvoice = [...invoices];
+        newInvoice.splice(index, 1);
+
+        setInvoices(newInvoice);
+
+        const saveService = new SaveService();
+        saveService.saveOnLocalStorage(newInvoice);
+    };
+
+    const handleDownload = () => {
+        // Download invoice file
     };
 
     return (
@@ -20,7 +42,7 @@ export default function TableOptions({ toggle, index }: OptionsProps) {
                 </li>
                 <li
                     className="menu-delete-content"
-                    onClick={(e) => handleClick(e)}
+                    onClick={(e) => handleDelete(e)}
                 >
                     <span className="menu-delete"></span>
                     Delete

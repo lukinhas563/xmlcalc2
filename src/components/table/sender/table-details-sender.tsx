@@ -1,4 +1,5 @@
 import { Person } from '@/interfaces/person-protocol';
+import { cnpjFormarter, cpfFormat } from '@/services/formarter';
 
 interface SenderProps {
     sender: Person;
@@ -24,7 +25,7 @@ export default function DetailsSender({ sender }: SenderProps) {
                     <div className="sender-infos2">
                         <span>
                             <p className="infos-title">CNPJ</p>
-                            <p>{sender.cnpj}</p>
+                            <p>{cnpjFormarter(sender.cnpj)}</p>
                         </span>
                         <span className="uf">
                             <p className="infos-title">UF</p>
@@ -51,7 +52,7 @@ export default function DetailsSender({ sender }: SenderProps) {
                     <div className="recipient-infos2">
                         <span>
                             <p className="infos-title">CPF</p>
-                            <p>{sender.cpf}</p>
+                            <p>{cpfFormat(sender.cpf)}</p>
                         </span>
                         <span className="uf2">
                             <p className="infos-title">UF</p>

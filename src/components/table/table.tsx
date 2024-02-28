@@ -25,7 +25,11 @@ export default function MainTable() {
             <thead className="table-header">
                 <tr className="table-header-line">
                     <th className="table-input">
-                        <input type="checkbox" id="table-checkbox-all" />
+                        <input
+                            type="checkbox"
+                            id="table-checkbox-all"
+                            className="table-check"
+                        />
                         <label htmlFor="table-checkbox-all"></label>
                     </th>
                     <th>N°</th>
@@ -38,7 +42,7 @@ export default function MainTable() {
                 </tr>
             </thead>
             <tbody className="table-body">
-                <TableLine invoices={invoices} />
+                <TableLine invoices={invoices} setInvoices={setInvoices} />
             </tbody>
         </table>
     );

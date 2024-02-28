@@ -8,8 +8,8 @@ export default class DocumentBuilder {
     private readonly parserService: DocumentParserService =
         new DocumentParserService();
 
-    async readFile(files: File | FileList): Promise<this> {
-        if (files instanceof FileList) {
+    async readFile(files: File | FileList | File[]): Promise<this> {
+        if (files instanceof FileList || Array.isArray(files)) {
             for (let i = 0; i < files.length; i++) {
                 const fileContent = await this.readerService.readFile(files[i]);
                 this.fileContents.push(fileContent);

@@ -6,12 +6,16 @@ import TableLineProducts from './line-products';
 import TableTaxList from './table-tax-list';
 import TableDetailsList from './table-details-list';
 import TableOptions from './table-options/table-option-list';
+import { cnpjFormarter, cpfFormat } from '@/services/formarter';
 
 interface TableLineProps {
     invoices: Invoice | Invoice[] | undefined;
+    setInvoices: React.Dispatch<
+        React.SetStateAction<Invoice | Invoice[] | undefined>
+    >;
 }
 
-export default function TableLine({ invoices }: TableLineProps) {
+export default function TableLine({ invoices, setInvoices }: TableLineProps) {
     if (invoices !== undefined) {
         if (Array.isArray(invoices)) {
             const totalInvoices = invoices.length;
@@ -22,6 +26,8 @@ export default function TableLine({ invoices }: TableLineProps) {
                     index={index}
                     invoice={invoice}
                     total={totalInvoices}
+                    invoices={invoices}
+                    setInvoices={setInvoices}
                 />
             ));
         }
@@ -32,9 +38,19 @@ interface TableLineItemProps {
     invoice: Invoice;
     index: number;
     total: number;
+    invoices: Invoice[];
+    setInvoices: React.Dispatch<
+        React.SetStateAction<Invoice | Invoice[] | undefined>
+    >;
 }
 
-function TableLineItem({ invoice, index, total }: TableLineItemProps) {
+function TableLineItem({
+    invoice,
+    index,
+    total,
+    invoices,
+    setInvoices,
+}: TableLineItemProps) {
     const [expanded, setExpanded] = useState<boolean>(false);
     const [menuExpanded, setMenuExpanded] = useState<boolean>(false);
 
@@ -56,22 +72,31 @@ function TableLineItem({ invoice, index, total }: TableLineItemProps) {
                 onClick={() => toggleExpansion()}
             >
                 <td className="table-input table-line-input">
-                    <input type="checkbox" id="table-checkbox-1" />
-                    <label htmlFor="table-checkbox-1"></label>
+                    <input
+                        type="checkbox"
+                        id={`table-checkbox-${index}`}
+                        className="table-check"
+                    />
+                    <label htmlFor={`table-checkbox-${index}`}></label>
                 </td>
                 <td>{invoice.number}</td>
                 <td>{invoice.sender.name.toUpperCase()}</td>
                 <td>
                     {invoice.sender.cnpj
-                        ? invoice.sender.cnpj
-                        : invoice.sender.cpf}
+                        ? cnpjFormarter(invoice.sender.cnpj)
+                        : cpfFormat(invoice.sender.cpf)}
                 </td>
                 <td>25/12/2025</td>
                 <td>{invoice.totalPrice.toFixed(2)}</td>
                 <td>{invoice.status}</td>
                 <td className="table-options" onClick={(e) => toogleMenu(e)}>
                     ⋮
-                    <TableOptions toggle={menuExpanded} index={index} />
+                    <TableOptions
+                        toggle={menuExpanded}
+                        index={index}
+                        invoices={invoices}
+                        setInvoices={setInvoices}
+                    />
                 </td>
             </tr>
             <tr className="table-expansiveline ">
