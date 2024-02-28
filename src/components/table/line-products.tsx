@@ -1,4 +1,5 @@
 import Product from '@/classes/product';
+import { nameSizeFormat } from '@/services/formarter';
 
 interface ProductsProps {
     products: Product[];
@@ -22,14 +23,16 @@ export default function TableLineProducts({ products }: ProductsProps) {
             <tbody>
                 {products.map((product, index) => (
                     <tr className="table-product-line" key={index}>
-                        <td>{product.name.toUpperCase()}</td>
+                        <td>
+                            {nameSizeFormat(product.name.toUpperCase(), 30)}
+                        </td>
                         <td>{product.taxCode}</td>
                         <td>{product.cfop}</td>
                         <td>{product.ncm}</td>
                         <td>{product.unit}</td>
                         <td>{product.amount}</td>
-                        <td>{product.unitPrice.toFixed(2)}</td>
-                        <td>{product.totalPrice.toFixed(2)}</td>
+                        <td>R$ {product.unitPrice.toFixed(2)}</td>
+                        <td>R$ {product.totalPrice.toFixed(2)}</td>
                     </tr>
                 ))}
             </tbody>

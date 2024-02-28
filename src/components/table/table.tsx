@@ -10,6 +10,7 @@ export default function MainTable() {
     const [invoices, setInvoices] = useState<Invoice | Invoice[] | undefined>(
         undefined,
     );
+    const [selectAll, setSelectAll] = useState<boolean>(false);
 
     useEffect(() => {
         const saveService = new SaveService();
@@ -20,6 +21,10 @@ export default function MainTable() {
         }
     }, []);
 
+    function handleSelectAll() {
+        setSelectAll((prevSelectAll) => !prevSelectAll);
+    }
+
     return (
         <table className="main-table maxWidth">
             <thead className="table-header">
@@ -28,7 +33,9 @@ export default function MainTable() {
                         <input
                             type="checkbox"
                             id="table-checkbox-all"
+                            checked={selectAll}
                             className="table-check"
+                            onChange={() => handleSelectAll()}
                         />
                         <label htmlFor="table-checkbox-all"></label>
                     </th>

@@ -6,7 +6,7 @@ import TableLineProducts from './line-products';
 import TableTaxList from './table-tax-list';
 import TableDetailsList from './table-details-list';
 import TableOptions from './table-options/table-option-list';
-import { cnpjFormarter, cpfFormat } from '@/services/formarter';
+import { cnpjFormarter, cpfFormat, nameSizeFormat } from '@/services/formarter';
 
 interface TableLineProps {
     invoices: Invoice | Invoice[] | undefined;
@@ -33,6 +33,8 @@ export default function TableLine({ invoices, setInvoices }: TableLineProps) {
         }
     }
 }
+
+// TABLE ITENS
 
 interface TableLineItemProps {
     invoice: Invoice;
@@ -80,14 +82,14 @@ function TableLineItem({
                     <label htmlFor={`table-checkbox-${index}`}></label>
                 </td>
                 <td>{invoice.number}</td>
-                <td>{invoice.sender.name.toUpperCase()}</td>
+                <td>{nameSizeFormat(invoice.sender.name.toUpperCase(), 30)}</td>
                 <td>
                     {invoice.sender.cnpj
                         ? cnpjFormarter(invoice.sender.cnpj)
                         : cpfFormat(invoice.sender.cpf)}
                 </td>
                 <td>25/12/2025</td>
-                <td>{invoice.totalPrice.toFixed(2)}</td>
+                <td>R$ {invoice.totalPrice.toFixed(2)}</td>
                 <td>{invoice.status}</td>
                 <td className="table-options" onClick={(e) => toogleMenu(e)}>
                     ⋮

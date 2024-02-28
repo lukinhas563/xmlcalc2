@@ -1,6 +1,7 @@
 import ButtonUpload from '@/components/buttons/button-upload';
 import WindowInput from '@/components/window/window-input';
 import MainTable from '@/components/table/table';
+import TaxCards from '@/components/cards/cards';
 
 export default function Home() {
     return (
@@ -21,61 +22,7 @@ export default function Home() {
             </header>
             <main className="main-content">
                 <div className="carousel-container">
-                    <div className="card">
-                        <div className="card-container-header">
-                            <p>Total</p>
-                            <p className="card-container-config">⋮</p>
-                        </div>
-                        <div className="card-container-content">
-                            <p className="card-content-price">R$</p>
-                            <p className="card-content-mainprice">50</p>
-                            <p className="card-content-cents">90</p>
-                        </div>
-                    </div>
-                    <div className="card">
-                        <div className="card-container-header">
-                            <p>Total</p>
-                            <p className="card-container-config">⋮</p>
-                        </div>
-                        <div className="card-container-content">
-                            <p className="card-content-price">R$</p>
-                            <p className="card-content-mainprice">50</p>
-                            <p className="card-content-cents">90</p>
-                        </div>
-                    </div>
-                    <div className="card">
-                        <div className="card-container-header">
-                            <p>Total</p>
-                            <p className="card-container-config">⋮</p>
-                        </div>
-                        <div className="card-container-content">
-                            <p className="card-content-price">R$</p>
-                            <p className="card-content-mainprice">50</p>
-                            <p className="card-content-cents">90</p>
-                        </div>
-                    </div>
-                    <div className="card">
-                        <div className="card-container-header">
-                            <p>Total</p>
-                            <p className="card-container-config">⋮</p>
-                        </div>
-                        <div className="card-container-content">
-                            <p className="card-content-price">R$</p>
-                            <p className="card-content-mainprice">50</p>
-                            <p className="card-content-cents">90</p>
-                        </div>
-                    </div>
-                    <div className="card">
-                        <div className="card-container-header">
-                            <p>Total</p>
-                            <p className="card-container-config">⋮</p>
-                        </div>
-                        <div className="card-container-content">
-                            <p className="card-content-price">R$</p>
-                            <p className="card-content-mainprice">50</p>
-                            <p className="card-content-cents">90</p>
-                        </div>
-                    </div>
+                    <TaxCards />
                 </div>
                 <div className="config-table maxWidth">
                     <input type="search" placeholder="Pesquisar" />

@@ -57,6 +57,8 @@ export default class Invoice {
                 0,
             );
         }
+
+        return 0;
     }
 
     addProduct(product: Product): void {

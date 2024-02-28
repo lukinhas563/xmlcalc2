@@ -32,3 +32,11 @@ export const sizeFormat = (size: number): string => {
         return `${(size / gigabyte).toFixed(2)} GB`;
     }
 };
+
+export const nameSizeFormat = (name: string, maxLength: number): string => {
+    if (name.length > maxLength) {
+        return name.substring(0, maxLength) + '...';
+    }
+
+    return name;
+};
