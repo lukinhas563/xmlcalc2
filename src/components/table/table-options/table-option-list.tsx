@@ -1,5 +1,6 @@
 import Invoice from '@/classes/invoice';
 import { SaveService } from '@/services/save';
+import React from 'react';
 
 interface OptionsProps {
     toggle: boolean;
@@ -16,7 +17,7 @@ export default function TableOptions({
     invoices,
     setInvoices,
 }: OptionsProps) {
-    const handleDelete = (e: MouseEvent) => {
+    const handleDelete = (e: React.MouseEvent) => {
         const newInvoice = [...invoices];
         newInvoice.splice(index, 1);
 

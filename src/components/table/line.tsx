@@ -7,6 +7,8 @@ import TableTaxList from './table-tax-list';
 import TableDetailsList from './table-details-list';
 import TableOptions from './table-options/table-option-list';
 import { cnpjFormarter, cpfFormat, nameSizeFormat } from '@/services/formarter';
+import { Person } from '@/interfaces/person-protocol';
+import { FisicalPerson, LegalPerson } from '@/classes/persons';
 
 interface TableLineProps {
     invoices: Invoice | Invoice[] | undefined;
@@ -60,9 +62,19 @@ function TableLineItem({
         setExpanded((prevExpanded) => !prevExpanded);
     };
 
-    const toogleMenu = (e: MouseEvent) => {
+    const toogleMenu = (e: React.MouseEvent) => {
         e.stopPropagation();
         setMenuExpanded((prevExpanded) => !prevExpanded);
+    };
+
+    const returnSender = (sender: Person) => {
+        if ('cnpj' in sender) {
+            const company = sender as LegalPerson;
+            return cnpjFormarter(company.cnpj);
+        } else {
+            const costumer = sender as FisicalPerson;
+            return cpfFormat(costumer.cpf);
+        }
     };
 
     const hasBorderBottom = index !== total - 1;
@@ -83,11 +95,7 @@ function TableLineItem({
                 </td>
                 <td>{invoice.number}</td>
                 <td>{nameSizeFormat(invoice.sender.name.toUpperCase(), 30)}</td>
-                <td>
-                    {invoice.sender.cnpj
-                        ? cnpjFormarter(invoice.sender.cnpj)
-                        : cpfFormat(invoice.sender.cpf)}
-                </td>
+                <td>{returnSender(invoice.sender)}</td>
                 <td>25/12/2025</td>
                 <td>R$ {invoice.totalPrice.toFixed(2)}</td>
                 <td>{invoice.status}</td>

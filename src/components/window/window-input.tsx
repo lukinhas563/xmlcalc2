@@ -1,5 +1,5 @@
 'use client';
-import { ChangeEvent, useState } from 'react';
+import React, { ChangeEvent, useState } from 'react';
 import DocumentBuilder from '@/classes/document-builder';
 import InvoiceDirector from '@/classes/invoice-director';
 import { SaveService } from '@/services/save';
@@ -13,7 +13,7 @@ export default function WindowInput() {
     const [files, setFiles] = useState<File[]>([]);
     const [progress, setProgress] = useState<number[]>([]);
 
-    function handleClosed(e: MouseEvent) {
+    function handleClosed(e: React.MouseEvent) {
         e.preventDefault();
 
         const windowInput = document.querySelector(
@@ -29,7 +29,7 @@ export default function WindowInput() {
 
     function handleFile(e: ChangeEvent<HTMLInputElement>) {
         if (e.target.files && e.target.files.length > 0) {
-            const filesData = e.target.files;
+            const filesData = Array.from(e.target.files);
 
             for (const file of filesData) {
                 const reader = new FileReader();
@@ -72,7 +72,7 @@ export default function WindowInput() {
         }
     }
 
-    function handleCancel(e: MouseEvent) {
+    function handleCancel(e: React.MouseEvent) {
         e.preventDefault();
 
         setFiles([]);
@@ -80,7 +80,7 @@ export default function WindowInput() {
         handleClosed(e);
     }
 
-    function handleDelete(e: MouseEvent, i: number) {
+    function handleDelete(e: React.MouseEvent, i: number) {
         e.preventDefault();
 
         const newFiles = [...files];
