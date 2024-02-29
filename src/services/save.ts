@@ -33,24 +33,6 @@ export class SaveService {
     }
 
     private tranformInvoice(object: any): Invoice {
-        let senderPerson;
-
-        if (object._sender._cnpj) {
-            senderPerson = new LegalPerson(
-                object._sender._name,
-                this.makeAddress(object._sender._address),
-                object._sender._fantasyName,
-                object._sender._cnpj,
-            );
-        } else {
-            senderPerson = new FisicalPerson(
-                object._sender._name,
-                this.makeAddress(object._sender._address),
-                object._sender._lastName,
-                object._sender._cpf,
-            );
-        }
-
         return new Invoice(
             object._number,
             object._serial,
@@ -72,6 +54,8 @@ export class SaveService {
                         productData._totalPrice,
                         productData._aliquotIcms,
                         productData._aliquotIpi,
+                        productData._csosn ? productData._csosn : undefined,
+                        productData._cst ? productData._cst : undefined,
                     ),
             ),
         );

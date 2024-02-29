@@ -26,6 +26,8 @@ export class LegalPerson extends Person {
         _address: Address,
         private readonly _fantasyName: string,
         private readonly _cnpj: string,
+
+        _taxRegime?: string,
     ) {
         super(_name, _address);
     }

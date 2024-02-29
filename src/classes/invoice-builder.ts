@@ -195,6 +195,43 @@ export default class InvoiceBuilder {
         return this;
     }
 
+    private csosnSearch(path: Element): number | undefined {
+        const tagICMS = path.getElementsByTagName('ICMS')[0];
+
+        if (tagICMS.getElementsByTagName('ICMSSN102')[0]) {
+            const csosn =
+                tagICMS
+                    .getElementsByTagName('ICMSSN102')[0]
+                    .getElementsByTagName('CSOSN')[0]?.textContent || '0.00';
+
+            return Number(csosn);
+        } else if (tagICMS.getElementsByTagName('ICMSSN500')[0]) {
+            const csosn =
+                tagICMS
+                    .getElementsByTagName('ICMSSN500')[0]
+                    .getElementsByTagName('CSOSN')[0]?.textContent || '0.00';
+
+            return Number(csosn);
+        } else {
+            return undefined;
+        }
+    }
+
+    private cstSearch(path: Element): number | undefined {
+        const tagICMS = path.getElementsByTagName('ICMS')[0];
+
+        if (tagICMS.getElementsByTagName('ICMS20')[0]) {
+            const cst =
+                tagICMS
+                    .getElementsByTagName('ICMS20')[0]
+                    .getElementsByTagName('CST')[0]?.textContent || '0.00';
+
+            return Number(cst);
+        }
+
+        return undefined;
+    }
+
     makeProduct(): Invoice {
         const pathProducts = this._document.getElementsByTagName(
             this._paths[8],
@@ -237,9 +274,16 @@ export default class InvoiceBuilder {
                     .getElementsByTagName('vProd')[0]?.textContent || 'N/A';
 
             // TAX
+
             const prodAliqIcms = '0';
             const prodAliqIpi = '0';
-            const csosn = '0';
+
+            const csosn = this.csosnSearch(
+                pathProducts[i].getElementsByTagName('imposto')[0],
+            );
+            const cst = this.cstSearch(
+                pathProducts[i].getElementsByTagName('imposto')[0],
+            );
 
             // Make Product
             const product = new Product(
@@ -253,6 +297,7 @@ export default class InvoiceBuilder {
                 prodAliqIcms,
                 prodAliqIpi,
                 csosn,
+                cst,
             );
 
             if (this._invoice !== null) {

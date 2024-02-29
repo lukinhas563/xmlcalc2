@@ -11,15 +11,6 @@ export default function MainNav() {
                 alt="Picture of the author"
                 className="icon-logo"
             />
-            <div className="profile-info">
-                <span>
-                    <p className="profile-grettings">Bem-vindo</p>
-                    <p>Lucas Montenegro</p>
-                </span>
-                <div className="profile-image">
-                    <div className="profile-menu"></div>
-                </div>
-            </div>
         </nav>
     );
 }

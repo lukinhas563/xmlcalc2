@@ -1,10 +1,12 @@
 'use client';
 
+import Invoice from '@/classes/invoice';
 import { SaveService } from '@/services/save';
 import { useEffect, useState } from 'react';
 import './cards.css';
 
 export default function TaxCards() {
+    const [invoice, setInvoice] = useState<Invoice | Invoice[]>([]);
     const [totalPrice, setTotalPrice] = useState(0);
 
     useEffect(() => {
@@ -19,9 +21,12 @@ export default function TaxCards() {
                 );
 
                 setTotalPrice(totalValue);
+                setInvoice(invoice);
             } else {
                 setTotalPrice(invoice.totalPrice);
+                setInvoice(invoice);
             }
+            console.log(invoice);
         }
     }, []);
 
@@ -60,7 +65,7 @@ export default function TaxCards() {
             </div>
             <div className="card">
                 <div className="card-container-header">
-                    <p>Total</p>
+                    <p>ICMS</p>
                     <p className="card-container-config">⋮</p>
                 </div>
                 <div className="card-container-content">

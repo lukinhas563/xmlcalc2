@@ -10,8 +10,8 @@ export default class Product {
         private readonly _aliquotIcms: string,
         private readonly _aliquotIpi: string,
 
-        private readonly _csosn?: string,
-        private readonly _cst?: string,
+        private readonly _csosn?: number,
+        private readonly _cst?: number,
     ) {}
 
     get name(): string {
@@ -50,7 +50,7 @@ export default class Product {
         return this._aliquotIpi;
     }
 
-    get taxCode(): string | undefined {
+    get taxCode(): number | undefined {
         if (this._csosn) {
             return this._csosn;
         } else {

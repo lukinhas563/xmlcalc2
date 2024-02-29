@@ -11,7 +11,12 @@ export default function TableLineProducts({ products }: ProductsProps) {
             <thead className="table-produt-header">
                 <tr className="table-produt-header-line">
                     <th>Nome</th>
-                    <th>CSOSN</th>
+                    <th>
+                        {products[0].taxCode !== undefined &&
+                        products[0].taxCode > 100
+                            ? 'CSOSN'
+                            : 'CST'}
+                    </th>
                     <th>CFOP</th>
                     <th>NCM</th>
                     <th>Un</th>
