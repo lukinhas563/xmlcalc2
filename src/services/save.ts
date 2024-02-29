@@ -58,6 +58,8 @@ export class SaveService {
                         productData._cst ? productData._cst : undefined,
                     ),
             ),
+            object._id,
+            object._createdAt,
         );
     }
 

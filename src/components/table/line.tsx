@@ -96,7 +96,7 @@ function TableLineItem({
                 <td>{invoice.number}</td>
                 <td>{nameSizeFormat(invoice.sender.name.toUpperCase(), 30)}</td>
                 <td>{returnSender(invoice.sender)}</td>
-                <td>25/12/2025</td>
+                <td>{invoice.emission}</td>
                 <td>R$ {invoice.totalPrice.toFixed(2)}</td>
                 <td>{invoice.status}</td>
                 <td className="table-options" onClick={(e) => toogleMenu(e)}>
@@ -116,7 +116,7 @@ function TableLineItem({
                     >
                         <div className="expansiveline-container-content">
                             <TableDetailsList invoice={invoice} />
-                            <TableTaxList />
+                            <TableTaxList invoice={invoice} />
                         </div>
 
                         <TableLineProducts products={invoice.products} />

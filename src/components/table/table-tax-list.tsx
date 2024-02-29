@@ -1,15 +1,25 @@
-export default function TableTaxList() {
+import Invoice from '@/classes/invoice';
+
+interface TaxProps {
+    invoice: Invoice;
+}
+
+export default function TableTaxList({ invoice }: TaxProps) {
+    const totalTax = (): number => {
+        return invoice.icms + invoice.cofins + invoice.pis;
+    };
+
     return (
         <div className="tax-container">
             <div className="tax-header">
-                <p className="details-title">Impostos #321</p>
-                <p className="infos-title">32 de Dez. de 2025</p>
+                <p className="details-title">Impostos #{invoice.id}</p>
+                <p className="infos-title">{invoice.createdAtBR}</p>
             </div>
             <table className="tax-list">
                 <tbody>
                     <tr>
                         <td>BC</td>
-                        <td>R$ 120,50</td>
+                        <td>{invoice.totalPrice.toFixed(2)}</td>
                     </tr>
                     <tr>
                         <td>DESCONTO</td>
@@ -17,22 +27,22 @@ export default function TableTaxList() {
                     </tr>
                     <tr>
                         <td>ICMS</td>
-                        <td>R$ 15,00</td>
+                        <td>R$ {invoice.icms.toFixed(2)}</td>
                     </tr>
                     <tr>
-                        <td>DIFAL</td>
-                        <td>R$ 05,00</td>
+                        <td>PIS</td>
+                        <td>R$ {invoice.pis.toFixed(2)}</td>
                     </tr>
                     <tr>
-                        <td>IPI</td>
-                        <td>R$ 0,00</td>
+                        <td>COFINS</td>
+                        <td>R$ {invoice.cofins.toFixed(2)}</td>
                     </tr>
                 </tbody>
             </table>
 
             <div className="tax-sum">
                 <p>Total</p>
-                <p>R$ 250,00</p>
+                <p>R$ {totalTax().toFixed(2)}</p>
             </div>
         </div>
     );

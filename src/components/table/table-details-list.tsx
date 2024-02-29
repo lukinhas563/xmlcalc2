@@ -10,8 +10,8 @@ export default function TableDetailsList({ invoice }: DetailsProps) {
     return (
         <div className="details-container">
             <div className="details-header">
-                <p className="details-title">Detalhes #321</p>
-                <p className="details-title-data">32 de Dez. de 2025 3:35PM</p>
+                <p className="details-title">Detalhes #{invoice.id}</p>
+                <p className="details-title-data">{invoice.createdAtBR}</p>
             </div>
             <div className="details-infos">
                 <span className="infos-key">
@@ -20,7 +20,7 @@ export default function TableDetailsList({ invoice }: DetailsProps) {
                 </span>
                 <span className="details-operation">
                     <p className="infos-title">Operação:</p>
-                    <p>Venda de mercaodria</p>
+                    <p>{invoice.operation}</p>
                 </span>
                 <span>
                     <p className="infos-title">Serie:</p>
@@ -32,7 +32,7 @@ export default function TableDetailsList({ invoice }: DetailsProps) {
                 </span>
                 <span>
                     <p className="infos-title">Emissão:</p>
-                    <p>32/12/2025</p>
+                    <p>{invoice.emission}</p>
                 </span>
                 <span>
                     <p className="infos-title">Status:</p>

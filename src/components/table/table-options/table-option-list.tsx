@@ -38,9 +38,6 @@ export default function TableOptions({
                     <span className="menu-download"></span>
                     Download
                 </li>
-                <li>
-                    <span className="menu-edit"></span>Edit
-                </li>
                 <li
                     className="menu-delete-content"
                     onClick={(e) => handleDelete(e)}

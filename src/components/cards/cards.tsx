@@ -85,7 +85,7 @@ export default function TaxCards() {
             <div className="card">
                 <div className="card-container-header">
                     <p>Total</p>
-                    <p className="card-container-config">⋮</p>
+                    <p className="card-container-config"></p>
                 </div>
                 <div className="card-container-content">
                     <p className="card-content-price">R$</p>
@@ -100,7 +100,7 @@ export default function TaxCards() {
             <div className="card">
                 <div className="card-container-header">
                     <p>ICMS</p>
-                    <p className="card-container-config">⋮</p>
+                    <p className="card-container-config"></p>
                 </div>
                 <div className="card-container-content">
                     <p className="card-content-price">R$</p>
@@ -113,7 +113,7 @@ export default function TaxCards() {
             <div className="card">
                 <div className="card-container-header">
                     <p>PIS</p>
-                    <p className="card-container-config">⋮</p>
+                    <p className="card-container-config"></p>
                 </div>
                 <div className="card-container-content">
                     <p className="card-content-price">R$</p>
@@ -126,7 +126,7 @@ export default function TaxCards() {
             <div className="card">
                 <div className="card-container-header">
                     <p>COFINS</p>
-                    <p className="card-container-config">⋮</p>
+                    <p className="card-container-config"></p>
                 </div>
                 <div className="card-container-content">
                     <p className="card-content-price">R$</p>
@@ -141,7 +141,7 @@ export default function TaxCards() {
             <div className="card">
                 <div className="card-container-header">
                     <p>Impostos</p>
-                    <p className="card-container-config">⋮</p>
+                    <p className="card-container-config"></p>
                 </div>
                 <div className="card-container-content">
                     <p className="card-content-price">R$</p>

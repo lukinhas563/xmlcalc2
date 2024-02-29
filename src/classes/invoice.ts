@@ -12,7 +12,13 @@ export default class Invoice {
         private readonly _sender: Person,
         private readonly _recipient: Person,
         private readonly _products: Product[] = [],
+        private readonly _id: number = Math.floor(Math.random() * 999),
+        private readonly _createdAt: Date = new Date(),
     ) {}
+
+    get id(): number {
+        return this._id;
+    }
 
     get number(): number {
         return this._number;
@@ -31,7 +37,14 @@ export default class Invoice {
     }
 
     get emission(): string {
-        return this._emission;
+        const options: Intl.DateTimeFormatOptions = {
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            timeZone: 'America/Sao_Paulo',
+        };
+
+        return new Date(this._emission).toLocaleDateString('pt-BR', options);
     }
 
     get status(): string {
@@ -78,6 +91,24 @@ export default class Invoice {
         }
 
         return 0.0;
+    }
+
+    get createdAt(): Date {
+        return this._createdAt;
+    }
+
+    get createdAtBR(): string {
+        const options: Intl.DateTimeFormatOptions = {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZone: 'America/Sao_Paulo',
+        };
+
+        return new Date(this._createdAt).toLocaleDateString('pt-BR', options);
     }
 
     addProduct(product: Product): void {
