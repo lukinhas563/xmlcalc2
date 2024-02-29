@@ -51,10 +51,6 @@ export default function WindowInput() {
     }
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-        const inputElement = e.currentTarget.querySelector(
-            'input[type="file"]',
-        ) as HTMLInputElement;
-
         if (files && files.length > 0) {
             const documentBuilder = new DocumentBuilder();
 

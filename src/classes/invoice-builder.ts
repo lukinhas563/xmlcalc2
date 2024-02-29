@@ -224,19 +224,52 @@ export default class InvoiceBuilder {
             const cst =
                 tagICMS
                     .getElementsByTagName('ICMS20')[0]
-                    .getElementsByTagName('CST')[0]?.textContent || '0.00';
+                    .getElementsByTagName('CST')[0]?.textContent || 0;
 
             return Number(cst);
         } else if (tagICMS.getElementsByTagName('ICMS60')[0]) {
             const cst =
                 tagICMS
                     .getElementsByTagName('ICMS60')[0]
-                    .getElementsByTagName('CST')[0]?.textContent || '0.00';
+                    .getElementsByTagName('CST')[0]?.textContent || 0;
 
             return Number(cst);
         }
 
         return undefined;
+    }
+
+    private icmsTaxRateSearch(path: Element): number {
+        const tagICMS = path.getElementsByTagName('ICMS')[0];
+
+        if (tagICMS.getElementsByTagName('ICMS20')[0]) {
+            const taxRate =
+                tagICMS
+                    .getElementsByTagName('ICMS20')[0]
+                    .getElementsByTagName('pICMS')[0]?.textContent || 0;
+
+            return Number(taxRate);
+        } else if (tagICMS.getElementsByTagName('ICMS60')[0]) {
+            const taxRate =
+                tagICMS
+                    .getElementsByTagName('ICMS60')[0]
+                    .getElementsByTagName('pICMS')[0]?.textContent || 0;
+
+            return Number(taxRate);
+        }
+
+        return 0;
+    }
+
+    private pisTaxRateSearch(path: Element): number {
+        const tagICMS = path.getElementsByTagName('PIS')[0];
+
+        const taxPIS =
+            tagICMS
+                .getElementsByTagName('PISAliq')[0]
+                .getElementsByTagName('pPIS')[0]?.textContent || 0;
+
+        return Number(taxPIS);
     }
 
     makeProduct(): Invoice | undefined {
@@ -282,15 +315,26 @@ export default class InvoiceBuilder {
 
             // TAX
 
-            const prodAliqIcms = '0';
-            const prodAliqIpi = '0';
-
             const csosn = this.csosnSearch(
                 pathProducts[i].getElementsByTagName('imposto')[0],
             );
             const cst = this.cstSearch(
                 pathProducts[i].getElementsByTagName('imposto')[0],
             );
+
+            const prodAliqIcms =
+                cst !== undefined && cst < 100
+                    ? this.icmsTaxRateSearch(
+                          pathProducts[i].getElementsByTagName('imposto')[0],
+                      )
+                    : 0;
+
+            const prodAliqPis =
+                cst !== undefined && cst < 100
+                    ? this.pisTaxRateSearch(
+                          pathProducts[i].getElementsByTagName('imposto')[0],
+                      )
+                    : 0;
 
             // Make Product
             const product = new Product(
@@ -302,7 +346,7 @@ export default class InvoiceBuilder {
                 Number(prodUnitPrice),
                 Number(prodTotalPrice),
                 prodAliqIcms,
-                prodAliqIpi,
+                prodAliqPis,
                 csosn,
                 cst,
             );

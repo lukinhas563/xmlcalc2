@@ -61,6 +61,25 @@ export default class Invoice {
         return 0;
     }
 
+    get icms(): number {
+        return this._products.reduce((icms, next) => icms + next.icms, 0);
+    }
+
+    get pis(): number {
+        return this._products.reduce((pis, next) => pis + next.pis, 0);
+    }
+
+    get cofins(): number {
+        if (
+            this._products.length > 0 &&
+            this._products[0].taxRegime === 'presumido'
+        ) {
+            return this.totalPrice * (3 / 100);
+        }
+
+        return 0.0;
+    }
+
     addProduct(product: Product): void {
         this.products.push(product);
     }
