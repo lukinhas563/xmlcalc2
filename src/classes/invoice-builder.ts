@@ -15,7 +15,7 @@ export default class InvoiceBuilder {
     private _recipient: Person | null = null;
     private _product: Product | null = null;
 
-    private _invoice: Invoice = null;
+    private _invoice: Invoice | null = null;
 
     private readonly _paths: string[] = [
         'ide',
@@ -227,12 +227,19 @@ export default class InvoiceBuilder {
                     .getElementsByTagName('CST')[0]?.textContent || '0.00';
 
             return Number(cst);
+        } else if (tagICMS.getElementsByTagName('ICMS60')[0]) {
+            const cst =
+                tagICMS
+                    .getElementsByTagName('ICMS60')[0]
+                    .getElementsByTagName('CST')[0]?.textContent || '0.00';
+
+            return Number(cst);
         }
 
         return undefined;
     }
 
-    makeProduct(): Invoice {
+    makeProduct(): Invoice | undefined {
         const pathProducts = this._document.getElementsByTagName(
             this._paths[8],
         );
@@ -302,10 +309,10 @@ export default class InvoiceBuilder {
 
             if (this._invoice !== null) {
                 this._invoice.addProduct(product);
+
+                return this._invoice;
             }
         }
-
-        return this._invoice;
     }
 
     makeInvoice(): this {

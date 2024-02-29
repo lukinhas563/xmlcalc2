@@ -27,7 +27,6 @@ export default function Home() {
                 <div className="config-table maxWidth">
                     <input type="search" placeholder="Pesquisar" />
                     <div className="config-buttons">
-                        <button className="button-grid"></button>
                         <button className="button-download"></button>
                     </div>
                 </div>
