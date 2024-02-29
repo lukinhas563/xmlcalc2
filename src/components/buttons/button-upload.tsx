@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 export default function ButtonUpload() {
     function handleButtonClick(): void {
         const windowInput = document.querySelector(
@@ -15,7 +17,13 @@ export default function ButtonUpload() {
 
     return (
         <button className="button-upload" onClick={() => handleButtonClick()}>
-            <img src="icons/icon-upload.svg" className="icon-upload"></img>
+            <Image
+                src="icons/icon-upload.svg"
+                alt="icon-upload"
+                width={150}
+                height={150}
+                className="icon-upload"
+            />
         </button>
     );
 }
