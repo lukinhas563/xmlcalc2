@@ -24,12 +24,7 @@ export default function Home() {
                 <div className="carousel-container">
                     <TaxCards />
                 </div>
-                <div className="config-table maxWidth">
-                    <input type="search" placeholder="Pesquisar" />
-                    <div className="config-buttons">
-                        <button className="button-download"></button>
-                    </div>
-                </div>
+
                 <MainTable />
             </main>
             <footer>

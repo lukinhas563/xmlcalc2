@@ -65,8 +65,6 @@ export default function WindowInput() {
                 const saveService = new SaveService();
                 saveService.saveOnLocalStorage(invoices);
             }
-
-            console.log(files);
         } else {
             e.preventDefault();
         }

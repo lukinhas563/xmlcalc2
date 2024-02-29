@@ -1,7 +1,7 @@
 'use client';
 
 import Invoice from '@/classes/invoice';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import TableLineProducts from './line-products';
 import TableTaxList from './table-tax-list';
 import TableDetailsList from './table-details-list';
@@ -15,9 +15,14 @@ interface TableLineProps {
     setInvoices: React.Dispatch<
         React.SetStateAction<Invoice | Invoice[] | undefined>
     >;
+    captureRows: (row: HTMLTableCellElement[]) => void;
 }
 
-export default function TableLine({ invoices, setInvoices }: TableLineProps) {
+export default function TableLine({
+    invoices,
+    setInvoices,
+    captureRows,
+}: TableLineProps) {
     if (invoices !== undefined) {
         if (Array.isArray(invoices)) {
             const totalInvoices = invoices.length;
@@ -43,6 +48,7 @@ interface TableLineItemProps {
     index: number;
     total: number;
     invoices: Invoice[];
+
     setInvoices: React.Dispatch<
         React.SetStateAction<Invoice | Invoice[] | undefined>
     >;

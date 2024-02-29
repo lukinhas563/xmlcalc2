@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Invoice from '@/classes/invoice';
 import { SaveService } from '@/services/save';
 import TableLine from './line';
+import ButtonDownload from '../buttons/button-download';
 import './table.css';
 
 export default function MainTable() {
@@ -11,6 +12,7 @@ export default function MainTable() {
         undefined,
     );
     const [selectAll, setSelectAll] = useState<boolean>(false);
+    const [tableRows, setTableRows] = useState<HTMLTableCellElement[]>([]);
 
     useEffect(() => {
         const saveService = new SaveService();
@@ -24,33 +26,48 @@ export default function MainTable() {
     function handleSelectAll() {
         setSelectAll((prevSelectAll) => !prevSelectAll);
     }
+    function captureTableRows(rows: HTMLTableCellElement[]) {
+        setTableRows(rows);
+    }
 
     return (
-        <table className="main-table maxWidth">
-            <thead className="table-header">
-                <tr className="table-header-line">
-                    <th className="table-input">
-                        <input
-                            type="checkbox"
-                            id="table-checkbox-all"
-                            checked={selectAll}
-                            className="table-check"
-                            onChange={() => handleSelectAll()}
-                        />
-                        <label htmlFor="table-checkbox-all"></label>
-                    </th>
-                    <th>N°</th>
-                    <th>EMITENTE</th>
-                    <th>CNPJ</th>
-                    <th>EMISSÃO</th>
-                    <th>VALOR</th>
-                    <th>STATUS</th>
-                    <th></th>
-                </tr>
-            </thead>
-            <tbody className="table-body">
-                <TableLine invoices={invoices} setInvoices={setInvoices} />
-            </tbody>
-        </table>
+        <>
+            <div className="config-table maxWidth">
+                <div></div>
+                <div className="config-buttons">
+                    <ButtonDownload />
+                </div>
+            </div>
+            <table className="main-table maxWidth">
+                <thead className="table-header">
+                    <tr className="table-header-line">
+                        <th className="table-input">
+                            <input
+                                type="checkbox"
+                                id="table-checkbox-all"
+                                checked={selectAll}
+                                className="table-check"
+                                onChange={() => handleSelectAll()}
+                            />
+                            <label htmlFor="table-checkbox-all"></label>
+                        </th>
+                        <th>N°</th>
+                        <th>EMITENTE</th>
+                        <th>CNPJ</th>
+                        <th>EMISSÃO</th>
+                        <th>VALOR</th>
+                        <th>STATUS</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody className="table-body">
+                    <TableLine
+                        invoices={invoices}
+                        setInvoices={setInvoices}
+                        captureRows={captureTableRows}
+                    />
+                </tbody>
+            </table>
+        </>
     );
 }
