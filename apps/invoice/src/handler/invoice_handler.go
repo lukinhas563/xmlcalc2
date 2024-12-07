@@ -48,16 +48,16 @@ func (*invoiceHandler) CreateServiceInvoice(ctx *gin.Context) {
 	}
 	defer content.Close()
 
-	var invoice entities.InvoiceService
+	var nfse entities.NFSe
 	decoder := xml.NewDecoder(content)
-	if err := decoder.Decode(&invoice); err != nil {
+	if err := decoder.Decode(&nfse); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"err": "File error 3",
 		})
 		return
 	}
 
-	ctx.JSON(http.StatusOK, invoice)
+	ctx.JSON(http.StatusOK, nfse)
 }
 
 func (*invoiceHandler) DeleteServiceInvoice(ctx *gin.Context) {
