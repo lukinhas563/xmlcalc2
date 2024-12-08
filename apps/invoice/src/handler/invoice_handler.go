@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/model/entities"
+	"github.com/lukinhas563/xmlcalc2/app/invoice/src/shared/util"
 )
 
 type IInvoiceHandler interface {
@@ -57,7 +58,17 @@ func (*invoiceHandler) CreateServiceInvoice(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, nfse)
+	invoiceServiceBuild := util.NewInvoiceServiceBuilder()
+	invoiceServiceBuild.
+		SetInfo(nfse.InfNFSe.ID, nfse.InfNFSe.NNFSe, nfse.InfNFSe.DhProc, nfse.InfNFSe.DPS.InfDPS.DhEmi, nfse.InfNFSe.DPS.InfDPS.Serie).
+		SetIssuer(nfse.InfNFSe.Emit.XNome, nfse.InfNFSe.Emit.Identity, nfse.InfNFSe.CLocIncid, nfse.InfNFSe.Emit.EnderNac.XLgr, nfse.InfNFSe.Emit.EnderNac.Nro, nfse.InfNFSe.Emit.EnderNac.XBairro, "").
+		SetRecipient(nfse.InfNFSe.DPS.InfDPS.Toma.XNome, nfse.InfNFSe.DPS.InfDPS.Toma.Identity, "", nfse.InfNFSe.DPS.InfDPS.Toma.End.XLgr, nfse.InfNFSe.DPS.InfDPS.Toma.End.Nro, nfse.InfNFSe.DPS.InfDPS.Toma.End.XBairro, nfse.InfNFSe.DPS.InfDPS.Toma.End.XCpl).
+		SetService(nfse.InfNFSe.DPS.InfDPS.Serv.CServ.CTribNac, nfse.InfNFSe.XTribNac, nfse.InfNFSe.DPS.InfDPS.Serv.CServ.XDescServ, nfse.InfNFSe.XLocPrestacao).
+		SetTotal(nfse.InfNFSe.DPS.InfDPS.Valores.VServPrest.VServ)
+
+	invoide := invoiceServiceBuild.Build()
+
+	ctx.JSON(http.StatusOK, invoide)
 }
 
 func (*invoiceHandler) DeleteServiceInvoice(ctx *gin.Context) {

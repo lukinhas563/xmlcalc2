@@ -1,6 +1,9 @@
 package entities
 
-import "encoding/xml"
+import (
+	"encoding/xml"
+	"time"
+)
 
 // NFSe representa o elemento raiz do XML
 type NFSe struct {
@@ -12,21 +15,39 @@ type NFSe struct {
 
 // InfNFSe contém as informações gerais da nota fiscal
 type infNFSe struct {
-	ID            string `xml:"Id,attr"`
-	XLocEmi       string `xml:"xLocEmi"`
-	XLocPrestacao string `xml:"xLocPrestacao"`
-	NNFSe         string `xml:"nNFSe"`
-	CLocIncid     string `xml:"cLocIncid"`
-	XLocIncid     string `xml:"xLocIncid"`
-	XTribNac      string `xml:"xTribNac"`
-	VerAplic      string `xml:"verAplic"`
-	AmbGer        string `xml:"ambGer"`
-	TpEmis        string `xml:"tpEmis"`
-	ProcEmi       string `xml:"procEmi"`
-	CStat         string `xml:"cStat"`
-	DhProc        string `xml:"dhProc"`
-	NDFSe         string `xml:"nDFSe"`
-	DPS           dps    `xml:"DPS"`
+	ID            string    `xml:"Id,attr"`
+	XLocEmi       string    `xml:"xLocEmi"`
+	XLocPrestacao string    `xml:"xLocPrestacao"`
+	NNFSe         int       `xml:"nNFSe"`
+	CLocIncid     string    `xml:"cLocIncid"`
+	XLocIncid     string    `xml:"xLocIncid"`
+	XTribNac      string    `xml:"xTribNac"`
+	VerAplic      string    `xml:"verAplic"`
+	AmbGer        string    `xml:"ambGer"`
+	TpEmis        string    `xml:"tpEmis"`
+	ProcEmi       string    `xml:"procEmi"`
+	CStat         string    `xml:"cStat"`
+	DhProc        time.Time `xml:"dhProc"`
+	NDFSe         string    `xml:"nDFSe"`
+	Emit          Emit      `xml:"emit"`
+	DPS           dps       `xml:"DPS"`
+}
+
+type Emit struct {
+	Identity string   `xml:"CNPJ,CPF"`
+	XNome    string   `xml:"xNome"`
+	EnderNac EnderNac `xml:"enderNac"`
+	Fone     string   `xml:"fone"`
+	Email    string   `xml:"email"`
+}
+
+type EnderNac struct {
+	XLgr    string `xml:"xLgr"`
+	Nro     string `xml:"nro"`
+	XBairro string `xml:"xBairro"`
+	CMun    string `xml:"cMun"`
+	UF      string `xml:"UF"`
+	CEP     string `xml:"CEP"`
 }
 
 // DPS contém informações do Documento de Prestação de Serviço
@@ -38,9 +59,9 @@ type dps struct {
 type infDPS struct {
 	ID       string     `xml:"Id,attr"`
 	TpAmb    string     `xml:"tpAmb"`
-	DhEmi    string     `xml:"dhEmi"`
+	DhEmi    time.Time  `xml:"dhEmi"`
 	VerAplic string     `xml:"verAplic"`
-	Serie    string     `xml:"serie"`
+	Serie    int        `xml:"serie"`
 	NDPS     string     `xml:"nDPS"`
 	DCompet  string     `xml:"dCompet"`
 	TpEmit   string     `xml:"tpEmit"`
@@ -60,9 +81,9 @@ type prestador struct {
 
 // Tomador representa as informações do tomador do serviço
 type tomador struct {
-	CNPJ  string   `xml:"CNPJ,CPF"`
-	XNome string   `xml:"xNome"`
-	End   endereco `xml:"end"`
+	Identity string   `xml:"CNPJ,CPF"`
+	XNome    string   `xml:"xNome"`
+	End      endereco `xml:"end"`
 }
 
 // Endereco representa o endereço do tomador
@@ -105,7 +126,7 @@ type dpsValores struct {
 
 // VServPrest representa os valores do serviço prestado
 type vServPrest struct {
-	VServ string `xml:"vServ"`
+	VServ float64 `xml:"vServ"`
 }
 
 // Trib representa informações tributárias
