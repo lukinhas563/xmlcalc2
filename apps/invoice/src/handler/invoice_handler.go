@@ -17,7 +17,9 @@ type IInvoiceHandler interface {
 	UpdateServiceInvoice(ctx *gin.Context)
 }
 
-type invoiceHandler struct{}
+type invoiceHandler struct {
+	invoiceServiceBuilder util.InvoiceServiceBuilder
+}
 
 func (*invoiceHandler) GetServiceInvoices(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
@@ -31,7 +33,7 @@ func (*invoiceHandler) GetServiceInvoicesById(ctx *gin.Context) {
 	})
 }
 
-func (*invoiceHandler) CreateServiceInvoice(ctx *gin.Context) {
+func (handler *invoiceHandler) CreateServiceInvoice(ctx *gin.Context) {
 	file, err := ctx.FormFile("invoice")
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
@@ -58,15 +60,14 @@ func (*invoiceHandler) CreateServiceInvoice(ctx *gin.Context) {
 		return
 	}
 
-	invoiceServiceBuild := util.NewInvoiceServiceBuilder()
-	invoiceServiceBuild.
+	handler.invoiceServiceBuilder.
 		SetInfo(nfse.InfNFSe.ID, nfse.InfNFSe.NNFSe, nfse.InfNFSe.DhProc, nfse.InfNFSe.DPS.InfDPS.DhEmi, nfse.InfNFSe.DPS.InfDPS.Serie).
 		SetIssuer(nfse.InfNFSe.Emit.XNome, nfse.InfNFSe.Emit.Identity, nfse.InfNFSe.CLocIncid, nfse.InfNFSe.Emit.EnderNac.XLgr, nfse.InfNFSe.Emit.EnderNac.Nro, nfse.InfNFSe.Emit.EnderNac.XBairro, "").
 		SetRecipient(nfse.InfNFSe.DPS.InfDPS.Toma.XNome, nfse.InfNFSe.DPS.InfDPS.Toma.Identity, "", nfse.InfNFSe.DPS.InfDPS.Toma.End.XLgr, nfse.InfNFSe.DPS.InfDPS.Toma.End.Nro, nfse.InfNFSe.DPS.InfDPS.Toma.End.XBairro, nfse.InfNFSe.DPS.InfDPS.Toma.End.XCpl).
 		SetService(nfse.InfNFSe.DPS.InfDPS.Serv.CServ.CTribNac, nfse.InfNFSe.XTribNac, nfse.InfNFSe.DPS.InfDPS.Serv.CServ.XDescServ, nfse.InfNFSe.XLocPrestacao).
 		SetTotal(nfse.InfNFSe.DPS.InfDPS.Valores.VServPrest.VServ)
 
-	invoide := invoiceServiceBuild.Build()
+	invoide := handler.invoiceServiceBuilder.Build()
 
 	ctx.JSON(http.StatusOK, invoide)
 }
@@ -83,6 +84,8 @@ func (*invoiceHandler) UpdateServiceInvoice(ctx *gin.Context) {
 	})
 }
 
-func NewInvoiceHandler() IInvoiceHandler {
-	return &invoiceHandler{}
+func NewInvoiceHandler(invoiceServiceBuilder util.InvoiceServiceBuilder) IInvoiceHandler {
+	return &invoiceHandler{
+		invoiceServiceBuilder: invoiceServiceBuilder,
+	}
 }

@@ -6,11 +6,19 @@ import (
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/model/entities"
 )
 
+type InvoiceServiceBuilder interface {
+	SetInfo(key string, number int, competence, dateIssue time.Time, series int) *invoiceBuilder
+	SetIssuer(name, identity, city, street, number, neighborhood, complement string) *invoiceBuilder
+	SetRecipient(name, identity, city, street, number, neighborhood, complement string) *invoiceBuilder
+	SetService(serviceCode, codeDescription, serviceDescription, localProvision string) *invoiceBuilder
+	SetTotal(total float64) *invoiceBuilder
+	Build() *entities.Invoice
+}
 type invoiceBuilder struct {
 	invoice entities.Invoice
 }
 
-func NewInvoiceServiceBuilder() *invoiceBuilder {
+func NewInvoiceServiceBuilder() InvoiceServiceBuilder {
 	return &invoiceBuilder{}
 }
 
