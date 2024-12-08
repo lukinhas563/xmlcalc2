@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lukinhas563/xmlcalc2/app/invoice/src/model/database"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/model/entities"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/shared/util"
 )
@@ -19,6 +20,7 @@ type IInvoiceHandler interface {
 
 type invoiceHandler struct {
 	invoiceServiceBuilder util.InvoiceServiceBuilder
+	database              database.MysqlDatabase
 }
 
 func (*invoiceHandler) GetServiceInvoices(ctx *gin.Context) {
@@ -67,9 +69,14 @@ func (handler *invoiceHandler) CreateServiceInvoice(ctx *gin.Context) {
 		SetService(nfse.InfNFSe.DPS.InfDPS.Serv.CServ.CTribNac, nfse.InfNFSe.XTribNac, nfse.InfNFSe.DPS.InfDPS.Serv.CServ.XDescServ, nfse.InfNFSe.XLocPrestacao).
 		SetTotal(nfse.InfNFSe.DPS.InfDPS.Valores.VServPrest.VServ)
 
-	invoide := handler.invoiceServiceBuilder.Build()
+	invoice := handler.invoiceServiceBuilder.Build()
 
-	ctx.JSON(http.StatusOK, invoide)
+	if err := handler.database.InsertInvoice(*invoice); err != nil {
+		ctx.JSON(http.StatusBadRequest, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, invoice)
 }
 
 func (*invoiceHandler) DeleteServiceInvoice(ctx *gin.Context) {
@@ -84,8 +91,9 @@ func (*invoiceHandler) UpdateServiceInvoice(ctx *gin.Context) {
 	})
 }
 
-func NewInvoiceHandler(invoiceServiceBuilder util.InvoiceServiceBuilder) IInvoiceHandler {
+func NewInvoiceHandler(invoiceServiceBuilder util.InvoiceServiceBuilder, database database.MysqlDatabase) IInvoiceHandler {
 	return &invoiceHandler{
 		invoiceServiceBuilder: invoiceServiceBuilder,
+		database:              database,
 	}
 }

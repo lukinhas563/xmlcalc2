@@ -1,0 +1,16 @@
+volumes:
+  db_backend:
+
+services:
+  db_invoice:
+    image: mysql
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=&{DB_INVOICE_ROOT_PASSWORD}
+      - MYSQL_USER=${DB_INVOICE_USER}
+      - MYSQL_PASSWORD=${DB_INVOICE_PASSWORD}
+      - MYSQL_DATABASE=${DB_INVOICE_DATABASE}
+    volumes:
+      - db_backend:/var/lib/mysql

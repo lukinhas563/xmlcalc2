@@ -1,3 +1,0 @@
-environment:
-  - EXAMPLE_ONE=${DB_ONE}
-  - EXAMPLE_TWO=${DB_TWO}
