@@ -23,10 +23,16 @@ type invoiceHandler struct {
 	database              database.MysqlDatabase
 }
 
-func (*invoiceHandler) GetServiceInvoices(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"hello": "Get List",
-	})
+func (handler *invoiceHandler) GetServiceInvoices(ctx *gin.Context) {
+	invoices, err := handler.database.GetAllInvoices()
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"hello": "erro to get all invoices",
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, invoices)
 }
 
 func (*invoiceHandler) GetServiceInvoicesById(ctx *gin.Context) {
