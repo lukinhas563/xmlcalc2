@@ -13,6 +13,7 @@ type MysqlDatabase interface {
 	Connect(user, password, host, port, database string) error
 	InsertInvoice(invoice entities.Invoice) error
 	GetAllInvoices() ([]*entities.Invoice, error)
+	GetInvoiceById(invoiceId int) (*entities.Invoice, error)
 }
 
 type mysqlDatabase struct {
@@ -132,7 +133,125 @@ func (d *mysqlDatabase) InsertInvoice(invoice entities.Invoice) error {
 
 func (d *mysqlDatabase) GetAllInvoices() ([]*entities.Invoice, error) {
 	query := `
+	SELECT 
+	-- Id da invoice
+	invoices.id,
+	
+	-- Campos do invoice_info
+	invoice_info.invoice_key, 
+	invoice_info.number, 
+	invoice_info.competence, 
+	invoice_info.dateIssue, 
+	invoice_info.series,
+	
+	-- Campos do emissor
+	persons.name AS issuer_name, 
+	persons.identity AS issuer_identity, 
+	persons.city AS issuer_city,
+	
+	-- Campos do endereço do emissor
+	addresses.street AS issuer_street, 
+	addresses.number AS issuer_number, 
+	addresses.neighborhood AS issuer_neighborhood, 
+	addresses.complement AS issuer_complement,
+	
+	-- Campos do destinatário
+	recipient.name AS recipient_name, 
+	recipient.identity AS recipient_identity, 
+	recipient.city AS recipient_city,
+	
+	-- Campos do endereço do destinatário
+	recipient_address.street AS recipient_street, 
+	recipient_address.number AS recipient_number, 
+	recipient_address.neighborhood AS recipient_neighborhood, 
+	recipient_address.complement AS recipient_complement,
+	
+	-- Campos dos serviços
+	services.code, 
+	services.codeDescription, 
+	services.serviceDescription, 
+	services.locationProvision,
+	
+	-- Total da invoice
+	invoices.total
+	FROM 
+	invoices
+	INNER JOIN invoice_info ON invoices.info_id = invoice_info.id
+	INNER JOIN persons AS persons ON invoices.issuer_id = persons.id
+	INNER JOIN addresses AS addresses ON persons.address_id = addresses.id
+	INNER JOIN persons AS recipient ON invoices.recipient_id = recipient.id
+	INNER JOIN addresses AS recipient_address ON recipient.address_id = recipient_address.id
+	INNER JOIN services ON invoices.service_id = services.id;
+`
+
+	result, err := d.database.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer result.Close()
+
+	invoices := []*entities.Invoice{}
+
+	for result.Next() {
+		var id int
+		var info entities.Info
+		var competence string
+		var dateIssue string
+		var issuer entities.Person
+		var recipient entities.Person
+		var issuerAddress entities.Address
+		var recipientAddress entities.Address
+		var service entities.Service
+		var total float64
+
+		if err := result.Scan(
+			&id, &info.Key, &info.Number, &competence, &dateIssue, &info.Series,
+			&issuer.Name, &issuer.Identity, &issuer.City, &issuerAddress.Street, &issuerAddress.Number, &issuerAddress.Neighborhood, &issuerAddress.Complement,
+			&recipient.Name, &recipient.Identity, &recipient.City, &recipientAddress.Street, &recipientAddress.Number, &recipientAddress.Neighborhood, &recipientAddress.Complement,
+			&service.Code, &service.CodeDescription, &service.ServiceDescription, &service.LocationProvision,
+			&total,
+		); err != nil {
+			return nil, err
+		}
+
+		parsedCompetence, err := parseDate(competence)
+		if err != nil {
+			fmt.Println("Erro ao converter a data:", err)
+			return nil, err
+		}
+		info.Competence = parsedCompetence
+
+		parsedDateIssue, err := parseDate(dateIssue)
+		if err != nil {
+			fmt.Println("Erro ao converter a data:", err)
+			return nil, err
+		}
+		info.DateIssue = parsedDateIssue
+
+		issuer.Address = issuerAddress
+		recipient.Address = recipientAddress
+
+		invoice := &entities.Invoice{
+			Id:        id,
+			Info:      info,
+			Issuer:    issuer,
+			Recipient: recipient,
+			Service:   service,
+			Total:     total,
+		}
+
+		invoices = append(invoices, invoice)
+	}
+
+	return invoices, nil
+}
+
+func (d *mysqlDatabase) GetInvoiceById(invoiceId int) (*entities.Invoice, error) {
+	query := `
 		SELECT 
+		-- Id da invoice
+		invoices.id,
+		
 		-- Campos do invoice_info
 		invoice_info.invoice_key, 
 		invoice_info.number, 
@@ -177,67 +296,65 @@ func (d *mysqlDatabase) GetAllInvoices() ([]*entities.Invoice, error) {
 		INNER JOIN addresses AS addresses ON persons.address_id = addresses.id
 		INNER JOIN persons AS recipient ON invoices.recipient_id = recipient.id
 		INNER JOIN addresses AS recipient_address ON recipient.address_id = recipient_address.id
-		INNER JOIN services ON invoices.service_id = services.id;
+		INNER JOIN services ON invoices.service_id = services.id
+		WHERE invoices.id = ?;
 	`
 
-	result, err := d.database.Query(query)
+	row := d.database.QueryRow(query, invoiceId)
+
+	var id int
+	var info entities.Info
+	var competence string
+	var dateIssue string
+	var issuer entities.Person
+	var recipient entities.Person
+	var issuerAddress entities.Address
+	var recipientAddress entities.Address
+	var service entities.Service
+	var total float64
+
+	// Faz o scan diretamente
+	err := row.Scan(
+		&id, &info.Key, &info.Number, &competence, &dateIssue, &info.Series,
+		&issuer.Name, &issuer.Identity, &issuer.City, &issuerAddress.Street, &issuerAddress.Number, &issuerAddress.Neighborhood, &issuerAddress.Complement,
+		&recipient.Name, &recipient.Identity, &recipient.City, &recipientAddress.Street, &recipientAddress.Number, &recipientAddress.Neighborhood, &recipientAddress.Complement,
+		&service.Code, &service.CodeDescription, &service.ServiceDescription, &service.LocationProvision,
+		&total,
+	)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			return nil, fmt.Errorf("invoice with ID %d not found", invoiceId)
+		}
 		return nil, err
 	}
-	defer result.Close()
 
-	invoices := []*entities.Invoice{}
+	// Parse de datas
+	parsedCompetence, err := parseDate(competence)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing competence date: %v", err)
+	}
+	info.Competence = parsedCompetence
 
-	for result.Next() {
-		var info entities.Info
-		var competence string
-		var dateIssue string
-		var issuer entities.Person
-		var recipient entities.Person
-		var issuerAddress entities.Address
-		var recipientAddress entities.Address
-		var service entities.Service
-		var total float64
+	parsedDateIssue, err := parseDate(dateIssue)
+	if err != nil {
+		return nil, fmt.Errorf("error parsing issue date: %v", err)
+	}
+	info.DateIssue = parsedDateIssue
 
-		if err := result.Scan(
-			&info.Key, &info.Number, &competence, &dateIssue, &info.Series,
-			&issuer.Name, &issuer.Identity, &issuer.City, &issuerAddress.Street, &issuerAddress.Number, &issuerAddress.Neighborhood, &issuerAddress.Complement,
-			&recipient.Name, &recipient.Identity, &recipient.City, &recipientAddress.Street, &recipientAddress.Number, &recipientAddress.Neighborhood, &recipientAddress.Complement,
-			&service.Code, &service.CodeDescription, &service.ServiceDescription, &service.LocationProvision,
-			&total,
-		); err != nil {
-			return nil, err
-		}
+	issuer.Address = issuerAddress
+	recipient.Address = recipientAddress
 
-		parsedCompetence, err := parseDate(competence)
-		if err != nil {
-			fmt.Println("Erro ao converter a data:", err)
-			return nil, err
-		}
-		info.Competence = parsedCompetence
-
-		parsedDateIssue, err := parseDate(dateIssue)
-		if err != nil {
-			fmt.Println("Erro ao converter a data:", err)
-			return nil, err
-		}
-		info.DateIssue = parsedDateIssue
-
-		issuer.Address = issuerAddress
-		recipient.Address = recipientAddress
-
-		invoice := &entities.Invoice{
-			Info:      info,
-			Issuer:    issuer,
-			Recipient: recipient,
-			Service:   service,
-			Total:     total,
-		}
-
-		invoices = append(invoices, invoice)
+	// Monta o objeto
+	invoice := &entities.Invoice{
+		Id:        id,
+		Info:      info,
+		Issuer:    issuer,
+		Recipient: recipient,
+		Service:   service,
+		Total:     total,
 	}
 
-	return invoices, nil
+	return invoice, nil
 }
 
 func NewMySqlDatabase() MysqlDatabase {

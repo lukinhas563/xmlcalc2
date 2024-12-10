@@ -3,6 +3,7 @@ package entities
 import "time"
 
 type Invoice struct {
+	Id        int
 	Info      Info
 	Issuer    Person
 	Recipient Person

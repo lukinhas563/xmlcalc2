@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/xml"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/model/database"
@@ -35,10 +36,23 @@ func (handler *invoiceHandler) GetServiceInvoices(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, invoices)
 }
 
-func (*invoiceHandler) GetServiceInvoicesById(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"hello": "Get ID",
-	})
+func (handler *invoiceHandler) GetServiceInvoicesById(ctx *gin.Context) {
+	stringId := ctx.Params.ByName("id")
+	id, err := strconv.Atoi(stringId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"err": "Nan",
+		})
+		return
+	}
+
+	invoice, err := handler.database.GetInvoiceById(id)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, invoice)
 }
 
 func (handler *invoiceHandler) CreateServiceInvoice(ctx *gin.Context) {
