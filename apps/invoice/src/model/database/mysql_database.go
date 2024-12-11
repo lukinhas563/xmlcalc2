@@ -20,19 +20,26 @@ type mysqlDatabase struct {
 	database *sql.DB
 }
 
-func (d *mysqlDatabase) Connect(user, password, host, port, database string) error {
+func (data *mysqlDatabase) Connect(user, password, host, port, database string) error {
 
-	db, err := sql.Open("mysql", fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, database))
-	if err != nil {
-		return err
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, database)
+	var db *sql.DB
+	var err error
+
+	for i := 0; i < 5; i++ {
+		db, err = sql.Open("mysql", dsn)
+
+		if err == nil {
+			if pingErr := db.Ping(); pingErr == nil {
+				data.database = db
+				return nil
+			}
+		}
+
+		time.Sleep(2 * time.Second)
 	}
 
-	if err := db.Ping(); err != nil {
-		return err
-	}
-
-	d.database = db
-	return nil
+	return fmt.Errorf("failed to connect to Database after 5 attempts: %w", err)
 }
 
 func (d *mysqlDatabase) InsertInvoice(invoice entities.Invoice) error {

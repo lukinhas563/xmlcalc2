@@ -1,16 +1,41 @@
 volumes:
   db_backend:
 
+networks:
+  app_network:
+    driver: bridge
+
 services:
-  db_invoice:
+  database:
+    container_name: database
     image: mysql
+    networks:
+      - app_network
     restart: always
     ports:
       - "3306:3306"
     environment:
-      - MYSQL_ROOT_PASSWORD=&{DB_INVOICE_ROOT_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_INVOICE_ROOT_PASSWORD}
       - MYSQL_USER=${DB_INVOICE_USER}
       - MYSQL_PASSWORD=${DB_INVOICE_PASSWORD}
       - MYSQL_DATABASE=${DB_INVOICE_DATABASE}
     volumes:
       - db_backend:/var/lib/mysql
+    
+  invoice:
+    container_name: invoice
+    build:
+      context: ../apps/invoice
+      dockerfile: Dockerfile
+    networks:
+      - app_network
+    depends_on:
+      - database
+    environment:
+      - DB_INVOICE_USER=${DB_INVOICE_USER}
+      - DB_INVOICE_PASSWORD=${DB_INVOICE_PASSWORD}
+      - DB_INVOICE_DATABASE=${DB_INVOICE_DATABASE}
+      - INVOICE_DB_HOST=database
+      - INVOICE_DB_PORT=3306
+    ports:
+      - "8080:8080"

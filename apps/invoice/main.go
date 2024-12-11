@@ -2,9 +2,9 @@ package main
 
 import (
 	"os"
+	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/handler"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/model/database"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/router"
@@ -12,15 +12,31 @@ import (
 )
 
 func main() {
-	if err := godotenv.Load("./../../.env"); err != nil {
-		panic("Error loading .env file")
-	}
-
 	DB_INVOICE_USER := os.Getenv("DB_INVOICE_USER")
 	DB_INVOICE_PASSWORD := os.Getenv("DB_INVOICE_PASSWORD")
 	DB_INVOICE_DATABASE := os.Getenv("DB_INVOICE_DATABASE")
 	INVOICE_DB_HOST := os.Getenv("INVOICE_DB_HOST")
 	INVOICE_DB_PORT := os.Getenv("INVOICE_DB_PORT")
+
+	if len(strings.TrimSpace(DB_INVOICE_USER)) == 0 {
+		panic("Enviroment DB_INVOICE_USER not defined")
+	}
+
+	if len(strings.TrimSpace(DB_INVOICE_PASSWORD)) == 0 {
+		panic("Enviroment DB_INVOICE_PASSWORD not defined")
+	}
+
+	if len(strings.TrimSpace(DB_INVOICE_DATABASE)) == 0 {
+		panic("Enviroment DB_INVOICE_DATABASE not defined")
+	}
+
+	if len(strings.TrimSpace(INVOICE_DB_HOST)) == 0 {
+		panic("Enviroment INVOICE_DB_HOST not defined")
+	}
+
+	if len(strings.TrimSpace(INVOICE_DB_PORT)) == 0 {
+		panic("Enviroment INVOICE_DB_PORT not defined")
+	}
 
 	server := gin.Default()
 	database := database.NewMySqlDatabase()
@@ -30,8 +46,9 @@ func main() {
 
 	invoiceServiceBuild := util.NewInvoiceServiceBuilder()
 	invoiceHandler := handler.NewInvoiceHandler(invoiceServiceBuild, database)
+	healthHandler := handler.NewHealthHandler()
 
-	router.InitRouter(server, invoiceHandler)
+	router.InitRouter(server, invoiceHandler, healthHandler)
 
 	server.Run()
 }

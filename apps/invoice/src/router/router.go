@@ -5,7 +5,11 @@ import (
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/handler"
 )
 
-func InitRouter(server *gin.Engine, invoiceHandler handler.IInvoiceHandler) {
+func InitRouter(server *gin.Engine, invoiceHandler handler.IInvoiceHandler, healthHandler handler.HealthHandler) {
+	// HEALTH ENDPOINT
+	server.GET("/health", healthHandler.GetHealth)
+
+	// INVOICE ENDPOINTS
 	server.GET("/invoice/service", invoiceHandler.GetServiceInvoices)
 	server.GET("/invoice/service/:id", invoiceHandler.GetServiceInvoicesById)
 	server.POST("/invoice/service", invoiceHandler.CreateServiceInvoice)
