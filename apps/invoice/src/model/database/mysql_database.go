@@ -7,6 +7,7 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/model/entities"
+	"github.com/lukinhas563/xmlcalc2/app/invoice/src/repository"
 )
 
 type MysqlDatabase interface {
@@ -17,7 +18,7 @@ type MysqlDatabase interface {
 }
 
 type mysqlDatabase struct {
-	database *sql.DB
+	repository repository.InvoiceRepository
 }
 
 func (data *mysqlDatabase) Connect(user, password, host, port, database string) error {
@@ -26,12 +27,12 @@ func (data *mysqlDatabase) Connect(user, password, host, port, database string) 
 	var db *sql.DB
 	var err error
 
-	for i := 0; i < 5; i++ {
+	for i := 0; i < 10; i++ {
 		db, err = sql.Open("mysql", dsn)
 
 		if err == nil {
 			if pingErr := db.Ping(); pingErr == nil {
-				data.database = db
+				data.repository = repository.NewInvoiceRepository(db)
 				return nil
 			}
 		}
@@ -39,326 +40,30 @@ func (data *mysqlDatabase) Connect(user, password, host, port, database string) 
 		time.Sleep(2 * time.Second)
 	}
 
-	return fmt.Errorf("failed to connect to Database after 5 attempts: %w", err)
+	return fmt.Errorf("failed to connect to Database after 10 attempts: %w", err)
 }
 
-func (d *mysqlDatabase) InsertInvoice(invoice entities.Invoice) error {
-	// Inserção da info
-	infoResult, err := d.database.Exec(
-		"INSERT INTO invoice_info (invoice_key, number, competence, dateIssue, series) VALUES (?, ?, ?, ?, ?)",
-		invoice.Info.Key,
-		invoice.Info.Number,
-		invoice.Info.Competence,
-		invoice.Info.DateIssue,
-		invoice.Info.Series,
-	)
-	if err != nil {
-		return err
-	}
-	infoId, _ := infoResult.LastInsertId()
-
-	// Inserção do endereço do emissor
-	addressIssuerResult, err := d.database.Exec(
-		"INSERT INTO addresses (street, number, neighborhood, complement) VALUES (?, ?, ?, ?)",
-		invoice.Issuer.Address.Street,
-		invoice.Issuer.Address.Number,
-		invoice.Issuer.Address.Neighborhood,
-		invoice.Issuer.Address.Complement,
-	)
-	if err != nil {
-		return err
-	}
-	addressIssuerId, _ := addressIssuerResult.LastInsertId()
-
-	// Inserção do emissor
-	issuerResult, err := d.database.Exec(
-		"INSERT INTO persons (name, identity, address_id, city) VALUES (?, ?, ?, ?)",
-		invoice.Issuer.Name,
-		invoice.Issuer.Identity,
-		addressIssuerId,
-		invoice.Issuer.City,
-	)
-	if err != nil {
-		return err
-	}
-	issuerId, _ := issuerResult.LastInsertId()
-
-	// Inserção do endereço do receptor
-	addressRecipientResult, err := d.database.Exec(
-		"INSERT INTO addresses (street, number, neighborhood, complement) VALUES (?, ?, ?, ?)",
-		invoice.Recipient.Address.Street,
-		invoice.Recipient.Address.Number,
-		invoice.Recipient.Address.Neighborhood,
-		invoice.Recipient.Address.Complement,
-	)
-	if err != nil {
-		return err
-	}
-	addressRecipientId, _ := addressRecipientResult.LastInsertId()
-
-	// Inserção do receptor
-	recipientResult, err := d.database.Exec(
-		"INSERT INTO persons (name, identity, address_id, city) VALUES (?, ?, ?, ?)",
-		invoice.Recipient.Name,
-		invoice.Recipient.Identity,
-		addressRecipientId,
-		invoice.Recipient.City,
-	)
-	if err != nil {
-		return err
-	}
-	recipientId, _ := recipientResult.LastInsertId()
-
-	// Inserção do serviço
-	serviceResult, err := d.database.Exec(
-		"INSERT INTO services (code, codeDescription, serviceDescription, locationProvision) VALUES (?, ?, ?, ?)",
-		invoice.Service.Code,
-		invoice.Service.CodeDescription,
-		invoice.Service.ServiceDescription,
-		invoice.Service.LocationProvision,
-	)
-	if err != nil {
-		return err
-	}
-	serviceId, _ := serviceResult.LastInsertId()
-
-	// Inserção da fatura
-	_, err = d.database.Exec(
-		"INSERT INTO invoices (info_id, issuer_id, recipient_id, service_id, total) VALUES (?, ?, ?, ?, ?)",
-		infoId,
-		issuerId,
-		recipientId,
-		serviceId,
-		invoice.Total,
-	)
-	if err != nil {
+func (data *mysqlDatabase) InsertInvoice(invoice entities.Invoice) error {
+	if err := data.repository.InsertInvoice(invoice); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (d *mysqlDatabase) GetAllInvoices() ([]*entities.Invoice, error) {
-	query := `
-	SELECT 
-	-- Id da invoice
-	invoices.id,
-	
-	-- Campos do invoice_info
-	invoice_info.invoice_key, 
-	invoice_info.number, 
-	invoice_info.competence, 
-	invoice_info.dateIssue, 
-	invoice_info.series,
-	
-	-- Campos do emissor
-	persons.name AS issuer_name, 
-	persons.identity AS issuer_identity, 
-	persons.city AS issuer_city,
-	
-	-- Campos do endereço do emissor
-	addresses.street AS issuer_street, 
-	addresses.number AS issuer_number, 
-	addresses.neighborhood AS issuer_neighborhood, 
-	addresses.complement AS issuer_complement,
-	
-	-- Campos do destinatário
-	recipient.name AS recipient_name, 
-	recipient.identity AS recipient_identity, 
-	recipient.city AS recipient_city,
-	
-	-- Campos do endereço do destinatário
-	recipient_address.street AS recipient_street, 
-	recipient_address.number AS recipient_number, 
-	recipient_address.neighborhood AS recipient_neighborhood, 
-	recipient_address.complement AS recipient_complement,
-	
-	-- Campos dos serviços
-	services.code, 
-	services.codeDescription, 
-	services.serviceDescription, 
-	services.locationProvision,
-	
-	-- Total da invoice
-	invoices.total
-	FROM 
-	invoices
-	INNER JOIN invoice_info ON invoices.info_id = invoice_info.id
-	INNER JOIN persons AS persons ON invoices.issuer_id = persons.id
-	INNER JOIN addresses AS addresses ON persons.address_id = addresses.id
-	INNER JOIN persons AS recipient ON invoices.recipient_id = recipient.id
-	INNER JOIN addresses AS recipient_address ON recipient.address_id = recipient_address.id
-	INNER JOIN services ON invoices.service_id = services.id;
-`
-
-	result, err := d.database.Query(query)
+func (data *mysqlDatabase) GetAllInvoices() ([]*entities.Invoice, error) {
+	invoices, err := data.repository.GetAllInvoices()
 	if err != nil {
 		return nil, err
-	}
-	defer result.Close()
-
-	invoices := []*entities.Invoice{}
-
-	for result.Next() {
-		var id int
-		var info entities.Info
-		var competence string
-		var dateIssue string
-		var issuer entities.Person
-		var recipient entities.Person
-		var issuerAddress entities.Address
-		var recipientAddress entities.Address
-		var service entities.Service
-		var total float64
-
-		if err := result.Scan(
-			&id, &info.Key, &info.Number, &competence, &dateIssue, &info.Series,
-			&issuer.Name, &issuer.Identity, &issuer.City, &issuerAddress.Street, &issuerAddress.Number, &issuerAddress.Neighborhood, &issuerAddress.Complement,
-			&recipient.Name, &recipient.Identity, &recipient.City, &recipientAddress.Street, &recipientAddress.Number, &recipientAddress.Neighborhood, &recipientAddress.Complement,
-			&service.Code, &service.CodeDescription, &service.ServiceDescription, &service.LocationProvision,
-			&total,
-		); err != nil {
-			return nil, err
-		}
-
-		parsedCompetence, err := parseDate(competence)
-		if err != nil {
-			fmt.Println("Erro ao converter a data:", err)
-			return nil, err
-		}
-		info.Competence = parsedCompetence
-
-		parsedDateIssue, err := parseDate(dateIssue)
-		if err != nil {
-			fmt.Println("Erro ao converter a data:", err)
-			return nil, err
-		}
-		info.DateIssue = parsedDateIssue
-
-		issuer.Address = issuerAddress
-		recipient.Address = recipientAddress
-
-		invoice := &entities.Invoice{
-			Id:        id,
-			Info:      info,
-			Issuer:    issuer,
-			Recipient: recipient,
-			Service:   service,
-			Total:     total,
-		}
-
-		invoices = append(invoices, invoice)
 	}
 
 	return invoices, nil
 }
 
-func (d *mysqlDatabase) GetInvoiceById(invoiceId int) (*entities.Invoice, error) {
-	query := `
-		SELECT 
-		-- Id da invoice
-		invoices.id,
-		
-		-- Campos do invoice_info
-		invoice_info.invoice_key, 
-		invoice_info.number, 
-		invoice_info.competence, 
-		invoice_info.dateIssue, 
-		invoice_info.series,
-		
-		-- Campos do emissor
-		persons.name AS issuer_name, 
-		persons.identity AS issuer_identity, 
-		persons.city AS issuer_city,
-		
-		-- Campos do endereço do emissor
-		addresses.street AS issuer_street, 
-		addresses.number AS issuer_number, 
-		addresses.neighborhood AS issuer_neighborhood, 
-		addresses.complement AS issuer_complement,
-		
-		-- Campos do destinatário
-		recipient.name AS recipient_name, 
-		recipient.identity AS recipient_identity, 
-		recipient.city AS recipient_city,
-		
-		-- Campos do endereço do destinatário
-		recipient_address.street AS recipient_street, 
-		recipient_address.number AS recipient_number, 
-		recipient_address.neighborhood AS recipient_neighborhood, 
-		recipient_address.complement AS recipient_complement,
-		
-		-- Campos dos serviços
-		services.code, 
-		services.codeDescription, 
-		services.serviceDescription, 
-		services.locationProvision,
-		
-		-- Total da invoice
-		invoices.total
-		FROM 
-		invoices
-		INNER JOIN invoice_info ON invoices.info_id = invoice_info.id
-		INNER JOIN persons AS persons ON invoices.issuer_id = persons.id
-		INNER JOIN addresses AS addresses ON persons.address_id = addresses.id
-		INNER JOIN persons AS recipient ON invoices.recipient_id = recipient.id
-		INNER JOIN addresses AS recipient_address ON recipient.address_id = recipient_address.id
-		INNER JOIN services ON invoices.service_id = services.id
-		WHERE invoices.id = ?;
-	`
-
-	row := d.database.QueryRow(query, invoiceId)
-
-	var id int
-	var info entities.Info
-	var competence string
-	var dateIssue string
-	var issuer entities.Person
-	var recipient entities.Person
-	var issuerAddress entities.Address
-	var recipientAddress entities.Address
-	var service entities.Service
-	var total float64
-
-	// Faz o scan diretamente
-	err := row.Scan(
-		&id, &info.Key, &info.Number, &competence, &dateIssue, &info.Series,
-		&issuer.Name, &issuer.Identity, &issuer.City, &issuerAddress.Street, &issuerAddress.Number, &issuerAddress.Neighborhood, &issuerAddress.Complement,
-		&recipient.Name, &recipient.Identity, &recipient.City, &recipientAddress.Street, &recipientAddress.Number, &recipientAddress.Neighborhood, &recipientAddress.Complement,
-		&service.Code, &service.CodeDescription, &service.ServiceDescription, &service.LocationProvision,
-		&total,
-	)
+func (data *mysqlDatabase) GetInvoiceById(invoiceId int) (*entities.Invoice, error) {
+	invoice, err := data.repository.GetInvoiceById(invoiceId)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, fmt.Errorf("invoice with ID %d not found", invoiceId)
-		}
 		return nil, err
-	}
-
-	// Parse de datas
-	parsedCompetence, err := parseDate(competence)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing competence date: %v", err)
-	}
-	info.Competence = parsedCompetence
-
-	parsedDateIssue, err := parseDate(dateIssue)
-	if err != nil {
-		return nil, fmt.Errorf("error parsing issue date: %v", err)
-	}
-	info.DateIssue = parsedDateIssue
-
-	issuer.Address = issuerAddress
-	recipient.Address = recipientAddress
-
-	// Monta o objeto
-	invoice := &entities.Invoice{
-		Id:        id,
-		Info:      info,
-		Issuer:    issuer,
-		Recipient: recipient,
-		Service:   service,
-		Total:     total,
 	}
 
 	return invoice, nil
@@ -366,16 +71,4 @@ func (d *mysqlDatabase) GetInvoiceById(invoiceId int) (*entities.Invoice, error)
 
 func NewMySqlDatabase() MysqlDatabase {
 	return &mysqlDatabase{}
-}
-
-func parseDate(dateStr string) (time.Time, error) {
-	if len(dateStr) == len("2006-01-02") {
-		// Apenas data (YYYY-MM-DD)
-		return time.Parse("2006-01-02", dateStr)
-	} else if len(dateStr) == len("2006-01-02 15:04:05") {
-		// Data e hora completas (YYYY-MM-DD HH:mm:ss)
-		return time.Parse("2006-01-02 15:04:05", dateStr)
-	}
-	// Caso o formato não seja compatível
-	return time.Time{}, fmt.Errorf("formato de data inválido: %s", dateStr)
 }
