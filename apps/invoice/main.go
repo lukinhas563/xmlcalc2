@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/lukinhas563/xmlcalc2/app/invoice/src/domain"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/handler"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/model/database"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/router"
@@ -38,16 +39,22 @@ func main() {
 		panic("Enviroment INVOICE_DB_PORT not defined")
 	}
 
+	// SERVER AND DATABASE
 	server := gin.Default()
 	database := database.NewMySqlDatabase()
 	if err := database.Connect(DB_INVOICE_USER, DB_INVOICE_PASSWORD, INVOICE_DB_HOST, INVOICE_DB_PORT, DB_INVOICE_DATABASE); err != nil {
 		panic(err)
 	}
 
+	// INVOICE ENDPOINT
 	invoiceServiceBuild := util.NewInvoiceServiceBuilder()
-	invoiceHandler := handler.NewInvoiceHandler(invoiceServiceBuild, database)
+	invoiceDomain := domain.NewInvoiceDomain(database, invoiceServiceBuild)
+	invoiceHandler := handler.NewInvoiceHandler(invoiceDomain)
+
+	// HEALTH ENDPOINT
 	healthHandler := handler.NewHealthHandler()
 
+	// ROUTER
 	router.InitRouter(server, invoiceHandler, healthHandler)
 
 	server.Run()
