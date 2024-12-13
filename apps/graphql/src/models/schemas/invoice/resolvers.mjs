@@ -1,14 +1,12 @@
-import axios from "axios";
-
-const invoices = async () => {
-  const result = await axios.get('http://localhost:8080/invoice/service')
+const invoices = async (_, __, { getInvoice }) => {
+  const result = await getInvoice('/invoice/service')
   return result.data
 }
 
-const invoice = async (_, {id}) => {
-  const result = await axios.get(`http://localhost:8080/invoice/service/${id}`)
+const invoice = async (_, { id }, { getInvoice }) => {
+  const result = await getInvoice(`/invoice/service/${id}`)
   return result.data
 }
 export const invoiceResolvers = {
-  Query: {invoices, invoice},
-}; 
+  Query: { invoices, invoice },
+}

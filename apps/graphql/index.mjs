@@ -1,8 +1,10 @@
-import { ApolloServer } from '@apollo/server';
-import { startStandaloneServer } from '@apollo/server/standalone';
-import { typeDefs, resolvers } from './src/models/schemas/index.mjs';
+import { ApolloServer } from '@apollo/server'
+import { startStandaloneServer } from '@apollo/server/standalone'
+import { typeDefs, resolvers } from './src/models/schemas/index.mjs'
+import { context } from './src/models/schemas/context.mjs'
 
-const server = new ApolloServer({typeDefs,resolvers});
+const server = new ApolloServer({ typeDefs, resolvers })
 
-const { url } = await startStandaloneServer(server);
-console.log(`🚀 Server ready at ${url}`);
+const { url } = await startStandaloneServer(server, { context })
+
+console.log(`🚀 Server ready at ${url}`)

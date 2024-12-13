@@ -5,40 +5,40 @@ export const invoiceTypeDefs = `#graphql
   }
 
   type Invoice {
-    Id: Int!
-    Info: Info!
-    Issuer: Person!
-    Recipient: Person!
-    Service: Service!
-    Total: Float!
+    id: Int!
+    info: Info!
+    issuer: Person! 
+    recipient: Person!
+    service: Service!
+    total: Float!
   }
 
   type Info {
-    Key: String!
-    Number: Int!
-    Competence: String!
-    DateIssue: String!
-    Series: Int!
+    key: String!
+    number: Int!
+    competence: String!
+    dateIssue: String!
+    series: Int!
   }
 
   type Person {
-    Name: String!
-    Identity: String!
-    Address: Address!
-    City: String
+    name: String!
+    identity: String!
+    address: Address!
+    city: String
   }
 
   type Address {
-    Street: String!
-    Number: String!
-    Neighborhood: String!
-    Complement: String
+    street: String!
+    number: String!
+    neighborhood: String!
+    complement: String
   }
 
   type Service {
-    Code: String!
-    CodeDescription: String!
-    ServiceDescription: String!
-    LocationProvision: String!
+    code: String!
+    codeDescription: String!
+    serviceDescription: String!
+    locationProvision: String!
   }
-`;
+`
