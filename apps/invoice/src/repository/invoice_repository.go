@@ -16,6 +16,7 @@ type InvoiceRepository interface {
 	InsertInvoice(invoice entities.Invoice) error
 	GetAllInvoices() ([]*entities.Invoice, error)
 	GetInvoiceById(invoiceId int) (*entities.Invoice, error)
+	DeleteInvoiceById(invoiceId int) error
 }
 
 type invoiceRepository struct {
@@ -361,6 +362,17 @@ func (repository *invoiceRepository) GetInvoiceById(invoiceId int) (*entities.In
 	}
 
 	return invoice, nil
+}
+
+func (repository *invoiceRepository) DeleteInvoiceById(invoiceId int) error {
+	query := "DELETE FROM invoices WHERE id = ?"
+
+	_, err := repository.database.Exec(query, invoiceId)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewInvoiceRepository(database *sql.DB) InvoiceRepository {

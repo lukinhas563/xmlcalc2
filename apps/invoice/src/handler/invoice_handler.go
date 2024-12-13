@@ -12,7 +12,7 @@ type IInvoiceHandler interface {
 	GetServiceInvoices(ctx *gin.Context)
 	GetServiceInvoicesById(ctx *gin.Context)
 	CreateServiceInvoice(ctx *gin.Context)
-	DeleteServiceInvoice(ctx *gin.Context)
+	DeleteServiceInvoiceById(ctx *gin.Context)
 	UpdateServiceInvoice(ctx *gin.Context)
 }
 
@@ -71,10 +71,24 @@ func (handler *invoiceHandler) CreateServiceInvoice(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, invoice)
 }
 
-func (*invoiceHandler) DeleteServiceInvoice(ctx *gin.Context) {
-	ctx.JSON(http.StatusOK, gin.H{
-		"hello": "delete",
-	})
+func (handler *invoiceHandler) DeleteServiceInvoiceById(ctx *gin.Context) {
+	stringId := ctx.Params.ByName("id")
+	id, err := strconv.Atoi(stringId)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"err": "Nan",
+		})
+		return
+	}
+
+	if err := handler.domain.DeleteServiceInvoiceById(id); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"err": err,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, "deleted")
 }
 
 func (*invoiceHandler) UpdateServiceInvoice(ctx *gin.Context) {

@@ -15,6 +15,7 @@ type MysqlDatabase interface {
 	InsertInvoice(invoice entities.Invoice) error
 	GetAllInvoices() ([]*entities.Invoice, error)
 	GetInvoiceById(invoiceId int) (*entities.Invoice, error)
+	DeleteInvoiceById(invoiceId int) error
 }
 
 type mysqlDatabase struct {
@@ -22,7 +23,6 @@ type mysqlDatabase struct {
 }
 
 func (data *mysqlDatabase) Connect(user, password, host, port, database string) error {
-
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, password, host, port, database)
 	var db *sql.DB
 	var err error
@@ -67,6 +67,14 @@ func (data *mysqlDatabase) GetInvoiceById(invoiceId int) (*entities.Invoice, err
 	}
 
 	return invoice, nil
+}
+
+func (data *mysqlDatabase) DeleteInvoiceById(invoiceId int) error {
+	if err := data.repository.DeleteInvoiceById(invoiceId); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewMySqlDatabase() MysqlDatabase {

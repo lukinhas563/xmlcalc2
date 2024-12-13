@@ -13,6 +13,7 @@ type InvoiceDomain interface {
 	GetAllServiceInvoices() ([]*entities.Invoice, error)
 	GetServiceInvoiceById(invoiceId int) (*entities.Invoice, error)
 	CreateServiceInvoice(file *multipart.FileHeader) (*entities.Invoice, error)
+	DeleteServiceInvoiceById(invoiceId int) error
 }
 
 type invoiceDomain struct {
@@ -65,6 +66,14 @@ func (domain *invoiceDomain) CreateServiceInvoice(file *multipart.FileHeader) (*
 	}
 
 	return invoice, nil
+}
+
+func (domain *invoiceDomain) DeleteServiceInvoiceById(invoiceId int) error {
+	if err := domain.database.DeleteInvoiceById(invoiceId); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func NewInvoiceDomain(database database.MysqlDatabase, invoiceServiceBuilder util.InvoiceServiceBuilder) InvoiceDomain {

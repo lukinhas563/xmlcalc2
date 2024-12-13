@@ -1,10 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/domain"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/handler"
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/model/database"
@@ -13,6 +15,11 @@ import (
 )
 
 func main() {
+	err := godotenv.Load("../../.env")
+	if err != nil {
+		fmt.Println(".env file not found")
+	}
+
 	DB_INVOICE_USER := os.Getenv("DB_INVOICE_USER")
 	DB_INVOICE_PASSWORD := os.Getenv("DB_INVOICE_PASSWORD")
 	DB_INVOICE_DATABASE := os.Getenv("DB_INVOICE_DATABASE")

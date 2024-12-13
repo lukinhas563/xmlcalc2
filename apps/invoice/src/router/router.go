@@ -13,6 +13,6 @@ func InitRouter(server *gin.Engine, invoiceHandler handler.IInvoiceHandler, heal
 	server.GET("/invoice/service", invoiceHandler.GetServiceInvoices)
 	server.GET("/invoice/service/:id", invoiceHandler.GetServiceInvoicesById)
 	server.POST("/invoice/service", invoiceHandler.CreateServiceInvoice)
-	server.DELETE("/invoice/service", invoiceHandler.DeleteServiceInvoice)
+	server.DELETE("/invoice/service/:id", invoiceHandler.DeleteServiceInvoiceById)
 	server.PUT("/invoice/service", invoiceHandler.UpdateServiceInvoice)
 }
