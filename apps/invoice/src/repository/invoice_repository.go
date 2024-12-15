@@ -13,10 +13,11 @@ type InvoiceRepository interface {
 	InsertAddress(address entities.Address) (int64, error)
 	InsertPerson(person entities.Person, addresId int64) (int64, error)
 	InsertService(service entities.Service) (int64, error)
-	InsertInvoice(invoice entities.Invoice) error
+	InsertInvoice(invoice entities.Invoice) (int64, error)
 	GetAllInvoices() ([]*entities.Invoice, error)
 	GetInvoiceById(invoiceId int) (*entities.Invoice, error)
 	DeleteInvoiceById(invoiceId int) error
+	InsertXML(name, xml string, invoiceId int64) (int64, error)
 }
 
 type invoiceRepository struct {
@@ -88,46 +89,61 @@ func (repository *invoiceRepository) InsertService(service entities.Service) (in
 	return serviceResult.LastInsertId()
 }
 
-func (repository *invoiceRepository) InsertInvoice(invoice entities.Invoice) error {
+func (repository *invoiceRepository) InsertXML(name, xml string, invoiceId int64) (int64, error) {
+	xmlResult, err := repository.database.Exec(
+		"INSERT INTO xmls (name, content, invoice_id) VALUES (?, ?, ?)",
+		name,
+		xml,
+		invoiceId,
+	)
+
+	if err != nil {
+		return 0, err
+	}
+
+	return xmlResult.LastInsertId()
+}
+
+func (repository *invoiceRepository) InsertInvoice(invoice entities.Invoice) (int64, error) {
 
 	// INSERT INFO
 	infoId, err := repository.InsertInfo(invoice.Info)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	// INSERT ISSUER'S ADDRESS
 	issuerAddressId, err := repository.InsertAddress(invoice.Issuer.Address)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	// INSERT ISSUER
 	issuerId, err := repository.InsertPerson(invoice.Issuer, issuerAddressId)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	// INSERT RECIPIENT'S ADDRESS
 	recipientAddressId, err := repository.InsertAddress(invoice.Recipient.Address)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	// INSERT RECIPIENT
 	recipientId, err := repository.InsertPerson(invoice.Recipient, recipientAddressId)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	// INSERT SERVICE
 	serviceId, err := repository.InsertService(invoice.Service)
 	if err != nil {
-		return err
+		return 0, err
 	}
 
 	// INSERT INVOICE
-	_, err = repository.database.Exec(
+	invoiceResult, err := repository.database.Exec(
 		"INSERT INTO invoices (info_id, issuer_id, recipient_id, service_id, total) VALUES (?, ?, ?, ?, ?)",
 		infoId,
 		issuerId,
@@ -137,10 +153,10 @@ func (repository *invoiceRepository) InsertInvoice(invoice entities.Invoice) err
 	)
 
 	if err != nil {
-		return err
+		return 0, err
 	}
 
-	return nil
+	return invoiceResult.LastInsertId()
 }
 
 func (repository *invoiceRepository) GetAllInvoices() ([]*entities.Invoice, error) {

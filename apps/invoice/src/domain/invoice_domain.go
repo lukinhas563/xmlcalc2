@@ -2,6 +2,7 @@ package domain
 
 import (
 	"encoding/xml"
+	"io"
 	"mime/multipart"
 
 	"github.com/lukinhas563/xmlcalc2/app/invoice/src/model/database"
@@ -46,9 +47,13 @@ func (domain *invoiceDomain) CreateServiceInvoice(file *multipart.FileHeader) (*
 	}
 	defer content.Close()
 
+	fileBytes, err := io.ReadAll(content)
+	if err != nil {
+		return nil, err
+	}
+
 	var nfse entities.NFSe
-	decoder := xml.NewDecoder(content)
-	if err := decoder.Decode(&nfse); err != nil {
+	if err := xml.Unmarshal(fileBytes, &nfse); err != nil {
 		return nil, err
 	}
 
@@ -61,7 +66,7 @@ func (domain *invoiceDomain) CreateServiceInvoice(file *multipart.FileHeader) (*
 
 	invoice := domain.invoiceServiceBuilder.Build()
 
-	if err := domain.database.InsertInvoice(*invoice); err != nil {
+	if err := domain.database.InsertInvoice(*invoice, string(fileBytes)); err != nil {
 		return nil, err
 	}
 

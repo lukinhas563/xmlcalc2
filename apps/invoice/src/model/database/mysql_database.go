@@ -12,7 +12,7 @@ import (
 
 type MysqlDatabase interface {
 	Connect(user, password, host, port, database string) error
-	InsertInvoice(invoice entities.Invoice) error
+	InsertInvoice(invoice entities.Invoice, file string) error
 	GetAllInvoices() ([]*entities.Invoice, error)
 	GetInvoiceById(invoiceId int) (*entities.Invoice, error)
 	DeleteInvoiceById(invoiceId int) error
@@ -43,10 +43,13 @@ func (data *mysqlDatabase) Connect(user, password, host, port, database string) 
 	return fmt.Errorf("failed to connect to Database after 10 attempts: %w", err)
 }
 
-func (data *mysqlDatabase) InsertInvoice(invoice entities.Invoice) error {
-	if err := data.repository.InsertInvoice(invoice); err != nil {
+func (data *mysqlDatabase) InsertInvoice(invoice entities.Invoice, file string) error {
+	invoideId, err := data.repository.InsertInvoice(invoice)
+	if err != nil {
 		return err
 	}
+
+	data.repository.InsertXML(time.Now().String(), file, invoideId)
 
 	return nil
 }
