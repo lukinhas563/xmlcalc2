@@ -44,7 +44,7 @@ func (handler *invoiceHandler) GetServiceInvoicesById(ctx *gin.Context) {
 
 	invoice, err := handler.domain.GetServiceInvoiceById(id)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, err)
+		ctx.JSON(http.StatusNotFound, gin.H{})
 		return
 	}
 
