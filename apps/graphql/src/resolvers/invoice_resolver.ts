@@ -1,5 +1,7 @@
 import { Arg, Int, Mutation, Query } from 'type-graphql'
 import { Invoice } from '../dtos/models/invoice_model'
+import { FileUpload, GraphQLUpload } from 'graphql-upload-ts'
+import FormData from 'form-data'
 import axios from 'axios'
 
 export default class InvoiceResolvers {
@@ -19,8 +21,30 @@ export default class InvoiceResolvers {
     return result.data
   }
 
-  @Mutation(() => String)
-  async uploadInvoice() {
-    return 'hello'
+  @Mutation(() => Boolean)
+  async uploadInvoice(@Arg('file', () => GraphQLUpload) file: FileUpload) {
+    const { createReadStream, filename, mimetype } = file
+
+    const formData = new FormData()
+    formData.append('invoice', createReadStream(), {
+      filename,
+      contentType: mimetype,
+    })
+
+    try {
+      const result = await axios.post(
+        'http://localhost:8080/invoice/service',
+        formData,
+        {
+          headers: {
+            'x-apollo-operation-name': 'uploadInvoice',
+          },
+        },
+      )
+      return true
+    } catch (error) {
+      console.error('Erro ao enviar o arquivo:', error)
+      return false
+    }
   }
 }

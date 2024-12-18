@@ -33,7 +33,7 @@ type Invoice {
 }
 
 type Mutation {
-  uploadInvoice: String!
+  uploadInvoice(file: Upload!): Boolean!
 }
 
 type Person {
@@ -54,3 +54,6 @@ type Service {
   locationProvision: String!
   serviceDescription: String!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
