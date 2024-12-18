@@ -1,8 +1,10 @@
-import { Arg, Int, Mutation, Query } from 'type-graphql'
 import { Invoice } from '../dtos/models/invoice_model'
+
+import { Arg, Int, Mutation, Query, Subscription } from 'type-graphql'
 import { FileUpload, GraphQLUpload } from 'graphql-upload-ts'
 import FormData from 'form-data'
 import axios from 'axios'
+import { pubsub } from '../pubsub'
 
 export default class InvoiceResolvers {
   constructor() {}
@@ -41,6 +43,8 @@ export default class InvoiceResolvers {
           },
         },
       )
+
+      pubsub.publish('NOTIFICATIONS', 'Invoice criado com sucesso!')
       return true
     } catch (error) {
       console.error('Erro ao enviar o arquivo:', error)
@@ -58,5 +62,10 @@ export default class InvoiceResolvers {
       console.error('Erro ao deletar o arquivo:', error)
       return false
     }
+  }
+
+  @Subscription(() => String, { topics: 'NOTIFICATIONS' })
+  async invoiceNotification(@Arg('payload', () => String) payload: string) {
+    return payload
   }
 }

@@ -56,5 +56,9 @@ type Service {
   serviceDescription: String!
 }
 
+type Subscription {
+  invoiceNotification(payload: String!): String!
+}
+
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
