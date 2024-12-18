@@ -33,6 +33,7 @@ type Invoice {
 }
 
 type Mutation {
+  deleteInvoice(id: Int!): Boolean!
   uploadInvoice(file: Upload!): Boolean!
 }
 

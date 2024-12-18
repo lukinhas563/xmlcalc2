@@ -47,4 +47,16 @@ export default class InvoiceResolvers {
       return false
     }
   }
+
+  @Mutation(() => Boolean)
+  async deleteInvoice(@Arg('id', () => Int) id: number) {
+    try {
+      await axios.delete('http://localhost:8080/invoice/service/' + id)
+
+      return true
+    } catch (error) {
+      console.error('Erro ao deletar o arquivo:', error)
+      return false
+    }
+  }
 }
