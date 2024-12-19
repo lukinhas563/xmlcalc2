@@ -4,7 +4,7 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "tsx --watch index.ts"
+    "dev": "tsx --watch --env-file=../../.env index.ts"
   },
   "dependencies": {
     "@apollo/server": "^4.11.2",
@@ -12,6 +12,7 @@
     "@graphql-yoga/subscription": "^5.0.2",
     "axios": "^1.7.9",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "graphql": "^16.9.0",
     "graphql-scalars": "^1.24.0",
