@@ -1,27 +1,6 @@
 import { Field, Float, GraphQLISODateTime, Int, ObjectType } from 'type-graphql'
 
 @ObjectType()
-export class Invoice {
-  @Field(() => String)
-  id: string
-
-  @Field(() => Info)
-  info: Info
-
-  @Field(() => Person)
-  issuer: Person
-
-  @Field(() => Person)
-  recipient: Person
-
-  @Field(() => Service)
-  service: Service
-
-  @Field(() => Float)
-  total: number
-}
-
-@ObjectType()
 export class Info {
   @Field(() => String)
   key: string
@@ -40,21 +19,6 @@ export class Info {
 }
 
 @ObjectType()
-export class Person {
-  @Field(() => String)
-  name: string
-
-  @Field(() => String)
-  identity: string
-
-  @Field(() => Address)
-  address: Address
-
-  @Field(() => String)
-  city: string
-}
-
-@ObjectType()
 export class Address {
   @Field(() => String)
   street: string
@@ -70,6 +34,21 @@ export class Address {
 }
 
 @ObjectType()
+export class Person {
+  @Field(() => String)
+  name: string
+
+  @Field(() => String)
+  identity: string
+
+  @Field(() => Address)
+  address: Address
+
+  @Field(() => String)
+  city: string
+}
+
+@ObjectType()
 export class Service {
   @Field(() => String)
   code: string
@@ -82,4 +61,25 @@ export class Service {
 
   @Field(() => String)
   locationProvision: string
+}
+
+@ObjectType()
+export class Invoice {
+  @Field(() => String)
+  id: string
+
+  @Field(() => Info)
+  info: Info
+
+  @Field(() => Person)
+  issuer: Person
+
+  @Field(() => Person)
+  recipient: Person
+
+  @Field(() => Service)
+  service: Service
+
+  @Field(() => Float)
+  total: number
 }

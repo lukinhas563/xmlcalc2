@@ -3,7 +3,6 @@ import 'reflect-metadata'
 import { ApolloServer } from '@apollo/server'
 import { buildSchema } from 'type-graphql'
 import { graphqlUploadExpress } from 'graphql-upload-ts'
-import { expressMiddleware } from '@apollo/server/express4'
 import { pubsub } from './pubsub'
 import { createServer } from 'node:http'
 import { WebSocketServer } from 'ws'
@@ -14,25 +13,16 @@ import path from 'node:path'
 import InvoiceResolvers from './resolvers/invoice_resolver'
 import cors from 'cors'
 import express from 'express'
-import InvoiceService from './shared/services/invoice_service'
+import { expressMiddleware } from '@apollo/server/express4'
+import protect from 'overload-protection'
+import setEnvironments from './shared/config/environments'
+import { Environments } from './shared/config/environments'
 
-export default async function main(
-  GRAPHQL_CORS_ORIGIN: string,
-  WEBSOCKET_PATH: string,
-  GRAPHQL_PATH: string,
-  PORT_SERVER: number,
-) {
+export default async function main(environments: Environments) {
   const app = express()
+  protect('express')
 
   const httpServer = createServer(app)
-
-  app.use(
-    cors({
-      origin: GRAPHQL_CORS_ORIGIN,
-    }),
-  )
-  app.use(graphqlUploadExpress())
-  app.use(express.json())
 
   const schema = await buildSchema({
     resolvers: [InvoiceResolvers],
@@ -43,7 +33,7 @@ export default async function main(
 
   const wsServer = new WebSocketServer({
     server: httpServer,
-    path: WEBSOCKET_PATH,
+    path: environments.WEBSOCKET_PATH,
   })
 
   const serverCleanup = useServer({ schema }, wsServer)
@@ -67,14 +57,27 @@ export default async function main(
 
   await server.start()
 
-  app.use(GRAPHQL_PATH, expressMiddleware(server))
+  app.use(
+    environments.GRAPHQL_PATH,
+    cors({
+      origin: environments.GRAPHQL_CORS_ORIGIN,
+    }),
+    express.json(),
+    graphqlUploadExpress(),
+    expressMiddleware(server),
+  )
 
-  httpServer.listen(PORT_SERVER, () => {
+  const port = 4000
+  httpServer.listen(port, () => {
     console.log(
-      `🚀 Server ready at http://localhost:${PORT_SERVER}${GRAPHQL_PATH}`,
+      `🚀 Server ready at http://localhost:${port}${environments.GRAPHQL_PATH}`,
     )
     console.log(
-      `🚀 Subscriptions ready at ws://localhost:${PORT_SERVER}${WEBSOCKET_PATH}`,
+      `🚀 Subscriptions ready at ws://localhost:${port}${environments.WEBSOCKET_PATH}`,
     )
   })
 }
+
+const env = setEnvironments()
+
+main(env)

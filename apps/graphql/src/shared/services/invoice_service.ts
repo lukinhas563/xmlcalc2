@@ -6,17 +6,25 @@ import { Service } from 'typedi'
 
 @Service()
 export default class InvoiceService {
-  constructor() {}
+  private readonly url: string
+  private readonly port: number
+
+  constructor() {
+    this.url = process.env.GRAPHQL_INVOICE_URL || 'localhost'
+    this.port = Number(process.env.GRAPHQL_INVOICE_PORT) || 8080
+  }
 
   async getInvoices(): Promise<Invoice[]> {
-    const result = await axios.get('http://localhost:8080/invoice/service')
+    const result = await axios.get(
+      `http://${this.url}:${this.port}/invoice/service`,
+    )
 
     return result.data
   }
 
   async getInvoiceById(id: number): Promise<Invoice> {
     const result = await axios.get(
-      'http://localhost:8080/invoice/service/' + id,
+      `http://${this.url}:${this.port}/invoice/service/` + id,
     )
 
     return result.data
@@ -33,7 +41,7 @@ export default class InvoiceService {
 
     try {
       const result = await axios.post(
-        'http://localhost:8080/invoice/service',
+        `http://${this.url}:${this.port}/invoice/service`,
         formData,
         {
           headers: {
@@ -56,7 +64,7 @@ export default class InvoiceService {
   async deleteInvoice(id: number) {
     try {
       const result = await axios.delete(
-        'http://localhost:8080/invoice/service/' + id,
+        `http://${this.url}:${this.port}/invoice/service/` + id,
       )
 
       if (result.status !== 200) {

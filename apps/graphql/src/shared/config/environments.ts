@@ -1,6 +1,6 @@
 import 'dotenv/config'
 
-type Environments = {
+export type Environments = {
   GRAPHQL_CORS_ORIGIN: string
   WEBSOCKET_PATH: string
   GRAPHQL_PATH: string
