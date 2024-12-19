@@ -1,67 +1,44 @@
 import { Invoice } from '../dtos/models/invoice_model'
-
-import { Arg, Int, Mutation, Query, Subscription } from 'type-graphql'
+import { Arg, Int, Mutation, Query, Resolver, Subscription } from 'type-graphql'
 import { FileUpload, GraphQLUpload } from 'graphql-upload-ts'
-import FormData from 'form-data'
-import axios from 'axios'
 import { pubsub } from '../pubsub'
+import { Inject, Service } from 'typedi'
+import InvoiceService from '../shared/services/invoice_service'
 
+@Resolver()
+@Service()
 export default class InvoiceResolvers {
-  constructor() {}
+  @Inject(() => InvoiceService)
+  private readonly invoiceService: InvoiceService
 
   @Query(() => [Invoice])
   async invoices() {
-    const result = await axios.get('http://localhost:8080/invoice/service')
-    return result.data
+    const invoices = await this.invoiceService.getInvoices()
+    return invoices
   }
 
   @Query(() => Invoice)
   async invoice(@Arg('id', () => Int) id: number) {
-    const result = await axios.get(
-      'http://localhost:8080/invoice/service/' + id,
-    )
-    return result.data
+    const invoice = await this.invoiceService.getInvoiceById(id)
+    return invoice
   }
 
   @Mutation(() => Boolean)
   async uploadInvoice(@Arg('file', () => GraphQLUpload) file: FileUpload) {
-    const { createReadStream, filename, mimetype } = file
+    const success = await this.invoiceService.uploadInvoice(file)
 
-    const formData = new FormData()
-    formData.append('invoice', createReadStream(), {
-      filename,
-      contentType: mimetype,
-    })
-
-    try {
-      const result = await axios.post(
-        'http://localhost:8080/invoice/service',
-        formData,
-        {
-          headers: {
-            'x-apollo-operation-name': 'uploadInvoice',
-          },
-        },
-      )
-
-      pubsub.publish('NOTIFICATIONS', 'Invoice criado com sucesso!')
-      return true
-    } catch (error) {
-      console.error('Erro ao enviar o arquivo:', error)
-      return false
+    if (success) {
+      pubsub.publish('NOTIFICATIONS', 'Invoice has been created!')
     }
+
+    return success
   }
 
   @Mutation(() => Boolean)
   async deleteInvoice(@Arg('id', () => Int) id: number) {
-    try {
-      await axios.delete('http://localhost:8080/invoice/service/' + id)
+    const success = await this.invoiceService.deleteInvoice(id)
 
-      return true
-    } catch (error) {
-      console.error('Erro ao deletar o arquivo:', error)
-      return false
-    }
+    return success
   }
 
   @Subscription(() => String, { topics: 'NOTIFICATIONS' })

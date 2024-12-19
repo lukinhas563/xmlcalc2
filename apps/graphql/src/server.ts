@@ -9,10 +9,12 @@ import { createServer } from 'node:http'
 import { WebSocketServer } from 'ws'
 import { useServer } from 'graphql-ws/lib/use/ws'
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer'
+import { Container } from 'typedi'
 import path from 'node:path'
 import InvoiceResolvers from './resolvers/invoice_resolver'
 import cors from 'cors'
 import express from 'express'
+import InvoiceService from './shared/services/invoice_service'
 
 export default async function main(
   GRAPHQL_CORS_ORIGIN: string,
@@ -35,6 +37,7 @@ export default async function main(
   const schema = await buildSchema({
     resolvers: [InvoiceResolvers],
     pubSub: pubsub,
+    container: Container,
     emitSchemaFile: path.resolve(__dirname, 'graphql', 'schema.gql'),
   })
 
