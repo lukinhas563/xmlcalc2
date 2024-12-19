@@ -1,13 +1,7 @@
 import 'reflect-metadata'
 
-import path from 'node:path'
-
 import { ApolloServer } from '@apollo/server'
-
 import { buildSchema } from 'type-graphql'
-import InvoiceResolvers from './resolvers/invoice_resolver'
-import cors from 'cors'
-import express from 'express'
 import { graphqlUploadExpress } from 'graphql-upload-ts'
 import { expressMiddleware } from '@apollo/server/express4'
 import { pubsub } from './pubsub'
@@ -15,19 +9,24 @@ import { createServer } from 'node:http'
 import { WebSocketServer } from 'ws'
 import { useServer } from 'graphql-ws/lib/use/ws'
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer'
+import path from 'node:path'
+import InvoiceResolvers from './resolvers/invoice_resolver'
+import cors from 'cors'
+import express from 'express'
 
-const WEBSOCKET_PATH = '/graphql'
-const GRAPHQL_PATH = '/graphql'
-const PORT_SERVER = 4000
-
-export default async function main() {
+export default async function main(
+  GRAPHQL_CORS_ORIGIN: string,
+  WEBSOCKET_PATH: string,
+  GRAPHQL_PATH: string,
+  PORT_SERVER: number,
+) {
   const app = express()
 
   const httpServer = createServer(app)
 
   app.use(
     cors({
-      origin: '*',
+      origin: GRAPHQL_CORS_ORIGIN,
     }),
   )
   app.use(graphqlUploadExpress())
