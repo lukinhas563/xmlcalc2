@@ -32,7 +32,7 @@ export default function Home() {
             <Header />
             <Table>
                 <THead
-                    columns={['ID', 'KEY', 'ISSUER', 'RECIPIENT', 'VALUE']}
+                    columns={['ID', 'KEY', 'ISSUER', 'RECIPIENT', 'VALUE', '']}
                 />
                 <tbody>
                     {invoices.map(({ id, info, issuer, recipient, total }) => {
@@ -44,6 +44,7 @@ export default function Home() {
                                 issuer={issuer.name}
                                 recipient={recipient.name}
                                 value={total}
+                                refetchInvoice={reexecuteQuery}
                             />
                         )
                     })}
