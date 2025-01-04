@@ -1,0 +1,20 @@
+{
+    "trailingComma": "all",
+    "tabWidth": 4,
+    "semi": false,
+    "singleQuote": true,
+    "overrides": [
+        {
+            "files": "*.graphql",
+            "options": {
+                "parser": "graphql"
+            }
+        },
+        {
+            "files": ["*.ts", "*.tsx"],
+            "options": {
+                "parser": "typescript"
+            }
+        }
+    ]
+}
