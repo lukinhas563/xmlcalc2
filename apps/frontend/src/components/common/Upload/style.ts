@@ -1,4 +1,4 @@
-type Styles = 'form' | 'label' | 'input' | 'footer'
+type Styles = 'form' | 'label' | 'input' | 'footer' | 'file' | 'content'
 
 const style: Record<Styles, React.CSSProperties> = {
     form: {
@@ -26,6 +26,15 @@ const style: Record<Styles, React.CSSProperties> = {
         display: 'flex',
         justifyContent: 'flex-end',
         alignItems: 'center',
+    },
+    file: {
+        padding: '5px',
+        width: '100%',
+        height: '35px',
+    },
+    content: {
+        width: '100%',
+        marginBottom: '20px',
     },
 }
 

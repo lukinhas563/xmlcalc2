@@ -56,7 +56,7 @@ export default function Home() {
                 onClose={() => setModalOpen(false)}
                 title="Upload invoice"
             >
-                <Upload />
+                <Upload onCancel={() => setModalOpen(false)} />
             </Modal>
         </Container>
     )

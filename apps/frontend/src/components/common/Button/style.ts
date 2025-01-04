@@ -28,6 +28,7 @@ const style: Record<Styles, React.CSSProperties> = {
         fontWeight: 'bold',
         color: 'white',
         margin: '0 5px',
+        border: 'none',
     },
 }
 
