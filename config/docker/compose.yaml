@@ -25,7 +25,7 @@ services:
   invoice:
     container_name: invoice
     build:
-      context: ../apps/invoice
+      context: ../../apps/invoice
       dockerfile: Dockerfile
     networks:
       - app_network
@@ -43,7 +43,7 @@ services:
   bff:
     container_name: bff
     build:
-      context: ../apps/graphql
+      context: ../../apps/graphql
       dockerfile: Dockerfile
     networks:
         - app_network

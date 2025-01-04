@@ -1,4 +1,4 @@
 docker_compose(
-    './docker/compose.yaml',
-    env_file='./.env'
+    './config/docker/compose.yaml',
+    env_file='./config/env/.env'
 )
