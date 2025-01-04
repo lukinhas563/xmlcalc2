@@ -11,5 +11,5 @@ local_resource(
         'apps/frontend/package.json',
         'apps/frontend/yarn.lock',
         'apps/frontend/public',
-    ]
+    ],
 )
