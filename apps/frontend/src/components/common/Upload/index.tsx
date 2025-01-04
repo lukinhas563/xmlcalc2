@@ -1,36 +1,61 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Button from '../Button'
 import style from './style'
+import { useUploadInvoice } from '../../../hooks/graphql/mutations/useUploadInvoice'
+import { UseQueryExecute } from 'urql'
 
 type UploadProps = {
     onCancel?: () => void
+    refetchInvoice?: UseQueryExecute
 }
 
-export default function Upload({ onCancel }: UploadProps) {
-    const [files, setFiles] = useState<File[]>([])
+export default function Upload({ onCancel, refetchInvoice }: UploadProps) {
+    const [file, setFile] = useState<File | null>(null)
+    const [disabled, setDisabled] = useState(true)
+    const [, uploadInvoice] = useUploadInvoice()
 
-    const isDisabled = files.length === 0
+    useEffect(() => {
+        setDisabled(!file)
+    }, [file])
 
-    const onSubmit = (event: React.FormEvent) => {
+    const onSubmit = async (event: React.FormEvent) => {
         event.preventDefault()
 
-        if (isDisabled) {
+        if (!file) {
             return
         }
 
-        console.log('Hello')
+        setDisabled(true)
+
+        try {
+            const result = await uploadInvoice({ file })
+            console.log('Upload successful', result)
+
+            if (refetchInvoice) {
+                refetchInvoice({ requestPolicy: 'network-only' })
+            }
+
+            setDisabled(false)
+            setFile(null)
+        } catch (error) {
+            console.error('Upload failed', error)
+            setDisabled(false)
+        }
     }
 
     const onChange = (event: React.FormEvent<HTMLInputElement>) => {
         const fileList = event.currentTarget.files
 
-        if (!fileList) {
+        if (!fileList || fileList.length === 0) {
             return
         }
 
-        const newList = [...files, fileList[0]]
+        setFile(fileList[0])
+    }
 
-        setFiles(newList)
+    const onReset = () => {
+        setFile(null)
+        if (onCancel) onCancel()
     }
 
     return (
@@ -46,13 +71,13 @@ export default function Upload({ onCancel }: UploadProps) {
             </label>
 
             <div style={style.content}>
-                {files.map((file) => {
-                    return (
-                        <p key={file.name} style={style.file}>
-                            {file.name}
-                        </p>
-                    )
-                })}
+                {file ? (
+                    <p key={file.name} style={style.file}>
+                        {file.name}
+                    </p>
+                ) : (
+                    <p style={style.file}>Nenhum arquivo selecionado</p>
+                )}
             </div>
 
             <div style={style.footer}>
@@ -60,13 +85,9 @@ export default function Upload({ onCancel }: UploadProps) {
                     styled="uncolor"
                     type="reset"
                     title="Cancel"
-                    onClick={() => {
-                        setFiles([])
-
-                        if (onCancel) onCancel()
-                    }}
+                    onClick={onReset}
                 />
-                <Button disabled={isDisabled} type="submit" title="Upload" />
+                <Button disabled={disabled} type="submit" title="Upload" />
             </div>
         </form>
     )

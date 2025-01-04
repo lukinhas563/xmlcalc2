@@ -10,7 +10,7 @@ import TLine from '../../common/TLine'
 import Upload from '../../common/Upload'
 
 export default function Home() {
-    const [{ data, fetching, error }] = useGetInvoices()
+    const [{ data, fetching, error }, reexecuteQuery] = useGetInvoices()
     const [modalOpen, setModalOpen] = useState(false)
 
     if (fetching) {
@@ -56,7 +56,10 @@ export default function Home() {
                 onClose={() => setModalOpen(false)}
                 title="Upload invoice"
             >
-                <Upload onCancel={() => setModalOpen(false)} />
+                <Upload
+                    onCancel={() => setModalOpen(false)}
+                    refetchInvoice={reexecuteQuery}
+                />
             </Modal>
         </Container>
     )
