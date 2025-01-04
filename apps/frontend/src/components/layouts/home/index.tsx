@@ -7,6 +7,7 @@ import Table from '../../common/Table'
 import TFooter from '../../common/TFooter'
 import THead from '../../common/THead'
 import TLine from '../../common/TLine'
+import Upload from '../../common/Upload'
 
 export default function Home() {
     const [{ data, fetching, error }] = useGetInvoices()
@@ -55,7 +56,7 @@ export default function Home() {
                 onClose={() => setModalOpen(false)}
                 title="Upload invoice"
             >
-                <p>Hello World Hello</p>
+                <Upload />
             </Modal>
         </Container>
     )

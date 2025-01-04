@@ -16,7 +16,6 @@ const style: Record<Styles, React.CSSProperties> = {
         backgroundColor: 'white',
         padding: '20px',
         borderRadius: '10px',
-        width: '60vw',
     },
     close: {
         display: 'none',
