@@ -1,3 +1,5 @@
+import style from './style'
+
 type TLineProps = {
     id: number
     uniqKey: string
@@ -14,12 +16,12 @@ export default function TLine({
     value,
 }: TLineProps) {
     return (
-        <tr>
-            <td>{id}</td>
+        <tr style={style.line}>
+            <td style={style.column}>{id}</td>
             <td>{uniqKey}</td>
             <td>{issuer}</td>
             <td>{recipient}</td>
-            <td>{value}</td>
+            <td style={style.column}>R$ {value}</td>
         </tr>
     )
 }
