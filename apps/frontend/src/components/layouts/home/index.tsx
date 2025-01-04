@@ -1,6 +1,8 @@
+import { useState } from 'react'
 import { useGetInvoices } from '../../../hooks/graphql/queries/useGetInvoices'
 import Container from '../../common/Container'
 import Header from '../../common/Header'
+import Modal from '../../common/Modal'
 import Table from '../../common/Table'
 import TFooter from '../../common/TFooter'
 import THead from '../../common/THead'
@@ -8,6 +10,7 @@ import TLine from '../../common/TLine'
 
 export default function Home() {
     const [{ data, fetching, error }] = useGetInvoices()
+    const [modalOpen, setModalOpen] = useState(false)
 
     if (fetching) {
         return <h1>Loading...</h1>
@@ -44,8 +47,16 @@ export default function Home() {
                         )
                     })}
                 </tbody>
-                <TFooter colSpan={3} />
+                <TFooter colSpan={3} onClick={() => setModalOpen(true)} />
             </Table>
+
+            <Modal
+                open={modalOpen}
+                onClose={() => setModalOpen(false)}
+                title="Upload invoice"
+            >
+                <p>Hello World Hello</p>
+            </Modal>
         </Container>
     )
 }
