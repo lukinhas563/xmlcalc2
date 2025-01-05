@@ -1,4 +1,4 @@
-type Styles = 'footer' | 'button'
+type Styles = 'footer' | 'button' | 'page'
 
 const style: Record<Styles, React.CSSProperties> = {
     footer: {
@@ -7,6 +7,9 @@ const style: Record<Styles, React.CSSProperties> = {
     button: {
         fontWeight: 'bolder',
         cursor: 'pointer',
+    },
+    page: {
+        textAlign: 'center',
     },
 }
 

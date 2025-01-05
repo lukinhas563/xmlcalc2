@@ -18,7 +18,7 @@ export default function TFooter({ colSpan, onClick, onPageDown, onPageUp, isDown
                 <td colSpan={colSpan} style={style.button} onClick={onClick}>
                     + Invoice
                 </td>
-                <td>
+                <td style={style.page}>
                     <Button disabled={isDownDisable} styled='uncolor' title='<' onClick={onPageDown}/>
                     <Button disabled={isUpDisable} styled='uncolor' title='>'onClick={onPageUp}/>
                 </td>

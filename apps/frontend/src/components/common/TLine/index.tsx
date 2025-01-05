@@ -64,8 +64,8 @@ export default function TLine({
             <td>{uniqKey}</td>
             <td>{issuer}</td>
             <td>{recipient}</td>
-            <td style={style.column}>R$ {value}</td>
-            <td>
+            <td style={style.column}>R$ {value.toFixed(2)}</td>
+            <td style={style.column}>
                 <Button styled="uncolor" title="X" onClick={handleModalOpen} />
             </td>
 
