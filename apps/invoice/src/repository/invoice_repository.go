@@ -14,10 +14,11 @@ type InvoiceRepository interface {
 	InsertPerson(person entities.Person, addresId int64) (int64, error)
 	InsertService(service entities.Service) (int64, error)
 	InsertInvoice(invoice entities.Invoice) (int64, error)
-	GetAllInvoices(pageSize int, page int) ([]*entities.Invoice, error)
+	GetAllInvoices(pageSize int, page int) ([]*entities.Invoice, int, error)
 	GetInvoiceById(invoiceId int) (*entities.Invoice, error)
 	DeleteInvoiceById(invoiceId int) error
 	InsertXML(name, xml string, invoiceId int64) (int64, error)
+	CountInvoices() (int, error)
 }
 
 type invoiceRepository struct {
@@ -159,7 +160,7 @@ func (repository *invoiceRepository) InsertInvoice(invoice entities.Invoice) (in
 	return invoiceResult.LastInsertId()
 }
 
-func (repository *invoiceRepository) GetAllInvoices(pageSize int, page int) ([]*entities.Invoice, error) {
+func (repository *invoiceRepository) GetAllInvoices(pageSize int, page int) ([]*entities.Invoice, int, error) {
 	query := `
 		SELECT 
 		-- Id da invoice
@@ -215,9 +216,9 @@ func (repository *invoiceRepository) GetAllInvoices(pageSize int, page int) ([]*
 		LIMIT ? OFFSET ?;
 	`
 
-	result, err := repository.database.Query(query, pageSize, page)
+	result, err := repository.database.Query(query, pageSize, (page-1)*pageSize)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 	defer result.Close()
 
@@ -242,20 +243,20 @@ func (repository *invoiceRepository) GetAllInvoices(pageSize int, page int) ([]*
 			&service.Code, &service.CodeDescription, &service.ServiceDescription, &service.LocationProvision,
 			&total,
 		); err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 
 		parsedCompetence, err := parseDate(competence)
 		if err != nil {
 			fmt.Println("Erro ao converter a data:", err)
-			return nil, err
+			return nil, 0, err
 		}
 		info.Competence = parsedCompetence
 
 		parsedDateIssue, err := parseDate(dateIssue)
 		if err != nil {
 			fmt.Println("Erro ao converter a data:", err)
-			return nil, err
+			return nil, 0, err
 		}
 		info.DateIssue = parsedDateIssue
 
@@ -274,7 +275,14 @@ func (repository *invoiceRepository) GetAllInvoices(pageSize int, page int) ([]*
 		invoices = append(invoices, invoice)
 	}
 
-	return invoices, nil
+	totalRecord, err := repository.CountInvoices()
+	if err != nil {
+		return nil, 0, err
+	}
+
+	maxPages := (totalRecord + pageSize - 1) / pageSize
+
+	return invoices, maxPages, nil
 }
 
 func (repository *invoiceRepository) GetInvoiceById(invoiceId int) (*entities.Invoice, error) {
@@ -392,6 +400,28 @@ func (repository *invoiceRepository) DeleteInvoiceById(invoiceId int) error {
 	}
 
 	return nil
+}
+
+func (repository *invoiceRepository) CountInvoices() (int, error) {
+	query := `
+		SELECT COUNT(*) 
+		FROM 
+		invoices
+		INNER JOIN invoice_info ON invoices.info_id = invoice_info.id
+		INNER JOIN persons AS persons ON invoices.issuer_id = persons.id
+		INNER JOIN addresses AS addresses ON persons.address_id = addresses.id
+		INNER JOIN persons AS recipient ON invoices.recipient_id = recipient.id
+		INNER JOIN addresses AS recipient_address ON recipient.address_id = recipient_address.id
+		INNER JOIN services ON invoices.service_id = services.id
+	`
+
+	var total int
+	err := repository.database.QueryRow(query).Scan(&total)
+	if err != nil {
+		return 0, err
+	}
+
+	return total, nil
 }
 
 func NewInvoiceRepository(database *sql.DB) InvoiceRepository {

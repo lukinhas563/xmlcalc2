@@ -11,7 +11,7 @@ import (
 )
 
 type InvoiceDomain interface {
-	GetAllServiceInvoices(pageSize int, page int) ([]*entities.Invoice, error)
+	GetAllServiceInvoices(pageSize int, page int) ([]*entities.Invoice, int, error)
 	GetServiceInvoiceById(invoiceId int) (*entities.Invoice, error)
 	CreateServiceInvoice(file *multipart.FileHeader) (*entities.Invoice, error)
 	DeleteServiceInvoiceById(invoiceId int) error
@@ -22,13 +22,13 @@ type invoiceDomain struct {
 	invoiceServiceBuilder util.InvoiceServiceBuilder
 }
 
-func (domain *invoiceDomain) GetAllServiceInvoices(pageSize int, page int) ([]*entities.Invoice, error) {
-	invoices, err := domain.database.GetAllInvoices(pageSize, page)
+func (domain *invoiceDomain) GetAllServiceInvoices(pageSize int, page int) ([]*entities.Invoice, int, error) {
+	invoices, maxPages, err := domain.database.GetAllInvoices(pageSize, page)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return invoices, nil
+	return invoices, maxPages, nil
 }
 
 func (domain *invoiceDomain) GetServiceInvoiceById(invoiceId int) (*entities.Invoice, error) {

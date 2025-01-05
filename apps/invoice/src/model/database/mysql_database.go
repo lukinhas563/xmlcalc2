@@ -13,7 +13,7 @@ import (
 type MysqlDatabase interface {
 	Connect(user, password, host, port, database string) error
 	InsertInvoice(invoice entities.Invoice, file string) error
-	GetAllInvoices(pageSize int, page int) ([]*entities.Invoice, error)
+	GetAllInvoices(pageSize int, page int) ([]*entities.Invoice, int, error)
 	GetInvoiceById(invoiceId int) (*entities.Invoice, error)
 	DeleteInvoiceById(invoiceId int) error
 }
@@ -54,13 +54,13 @@ func (data *mysqlDatabase) InsertInvoice(invoice entities.Invoice, file string) 
 	return nil
 }
 
-func (data *mysqlDatabase) GetAllInvoices(pageSize int, page int) ([]*entities.Invoice, error) {
-	invoices, err := data.repository.GetAllInvoices(pageSize, page)
+func (data *mysqlDatabase) GetAllInvoices(pageSize int, page int) ([]*entities.Invoice, int, error) {
+	invoices, maxPages, err := data.repository.GetAllInvoices(pageSize, page)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
 
-	return invoices, nil
+	return invoices, maxPages, nil
 }
 
 func (data *mysqlDatabase) GetInvoiceById(invoiceId int) (*entities.Invoice, error) {

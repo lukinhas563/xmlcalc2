@@ -40,13 +40,17 @@ func (handler *invoiceHandler) GetServiceInvoices(ctx *gin.Context) {
 		return
 	}
 
-	invoices, err := handler.domain.GetAllServiceInvoices(pageSize, page)
+	invoices, maxPages, err := handler.domain.GetAllServiceInvoices(pageSize, page)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"hello": "erro to get all invoices",
 		})
 		return
 	}
+
+	ctx.Header("X-Page-Size", pageSizeString)
+	ctx.Header("X-Current-Page", pageString)
+	ctx.Header("X-Max-Pages", strconv.Itoa(maxPages))
 
 	ctx.JSON(http.StatusOK, invoices)
 }
