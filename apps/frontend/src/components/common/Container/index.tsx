@@ -2,7 +2,7 @@ import { ReactNode } from 'react'
 import style from './style'
 
 type ContainerProps = {
-    children: ReactNode
+    children?: ReactNode
 }
 
 export default function Container({ children }: ContainerProps) {

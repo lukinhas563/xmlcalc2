@@ -12,7 +12,7 @@ import Upload from '../../common/Upload'
 export default function Home() {
     const PAGESIZE = 5
 
-    const [page, setPage] = useState(0)
+    const [page, setPage] = useState(1)
     const [{ data, fetching, error }, reexecuteQuery] = useGetInvoices(PAGESIZE, page)
     const [modalOpen, setModalOpen] = useState(false)
 
@@ -28,21 +28,26 @@ export default function Home() {
         return <h1>Error</h1>
     }
 
-    const invoices = data.invoices
+    const invoices = data.invoices.invoices
+    const maxPage = Number(data.invoices.maxPages)
 
     const handlePageUp = () => {
-        const newPage = page + PAGESIZE
+        if (page === maxPage) {
+            return
+        }
+
+        const newPage = page + 1
    
         setPage(newPage)
         reexecuteQuery()
     }
 
     const handlePageDown = () => {
-        if (page === 0) {
+        if (page === 1) {
             return
         }
 
-        const newPage = page - PAGESIZE
+        const newPage = page - 1
    
         setPage(newPage)
         reexecuteQuery()
@@ -70,7 +75,14 @@ export default function Home() {
                         )
                     })}
                 </tbody>
-                <TFooter colSpan={3} onClick={() => setModalOpen(true)} onPageUp={handlePageUp} onPageDown={handlePageDown} isDownDisable={page === 0 ? true : false}/>
+                <TFooter 
+                    colSpan={3} 
+                    onClick={() => setModalOpen(true)} 
+                    onPageUp={handlePageUp} 
+                    onPageDown={handlePageDown} 
+                    isDownDisable={page === 1 ? true : false} 
+                    isUpDisable={page === maxPage ? true : false}
+                />
             </Table>
 
             <Modal

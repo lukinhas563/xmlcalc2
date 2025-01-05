@@ -1,30 +1,31 @@
 import { useQuery } from 'urql'
-import { Invoice } from '../../../shared/types/getInvoice'
+import { Page } from '../../../shared/types/getInvoice'
 
 const GetInvoices = `#graphql
-    query GetInvoices($pageSize: Int!, $page: Int!) {
-        invoices(pageSize: $pageSize, page: $page) {
-            id
-            info {
-                key
-                number
-                series
-            }
-            issuer {
-                name
-                identity
-            }
-            recipient {
-                name
-                identity
-            }
-            total 
-        }
-    }  
+query PageInvoices($page: Int!, $pageSize: Int!) {
+  invoices(page: $page, pageSize: $pageSize) {
+    invoices {
+      id
+      info {
+        key
+      }
+      issuer {
+        name
+      }
+      recipient {
+        name
+      }
+      total
+    }
+    currentPage
+    maxPages
+    pageSize
+  }
+}
 `
 
 export function useGetInvoices(pageSize: number, page: number) {
-    return useQuery<{ invoices: Invoice[] }>({
+    return useQuery<{ invoices: Page }>({
         query: GetInvoices,
         variables: { pageSize, page },
     })
