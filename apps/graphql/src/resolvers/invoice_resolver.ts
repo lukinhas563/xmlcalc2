@@ -1,4 +1,4 @@
-import { Invoice } from '../dtos/models/invoice_model'
+import { Invoice, Page } from '../dtos/models/invoice_model'
 import {
   Arg,
   Args,
@@ -19,13 +19,16 @@ export default class InvoiceResolvers {
   @Inject(() => InvoiceService)
   private readonly invoiceService: InvoiceService
 
-  @Query(() => [Invoice])
+  @Query(() => Page)
   async invoices(
     @Arg('pageSize', () => Int) pageSize: number,
     @Arg('page', () => Int) page: number,
   ) {
-    const invoices = await this.invoiceService.getInvoices(pageSize, page)
-    return invoices
+    const response = await this.invoiceService.getInvoices(pageSize, page)
+
+    const { invoices, currentPage, maxPages, pageSizeHeader } = response
+
+    return { invoices, currentPage, maxPages, pageSize: pageSizeHeader }
   }
 
   @Query(() => Invoice)

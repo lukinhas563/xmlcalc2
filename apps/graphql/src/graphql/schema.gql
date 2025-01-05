@@ -37,6 +37,13 @@ type Mutation {
   uploadInvoice(file: Upload!): Boolean!
 }
 
+type Page {
+  currentPage: String!
+  invoices: [Invoice!]!
+  maxPages: String!
+  pageSize: String!
+}
+
 type Person {
   address: Address!
   city: String!
@@ -46,7 +53,7 @@ type Person {
 
 type Query {
   invoice(id: Int!): Invoice!
-  invoices: [Invoice!]!
+  invoices(page: Int!, pageSize: Int!): Page!
 }
 
 type Service {

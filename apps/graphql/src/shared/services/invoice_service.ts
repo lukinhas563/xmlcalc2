@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { RawAxiosResponseHeaders } from 'axios'
 import FormData from 'form-data'
 import { Invoice } from '../../dtos/models/invoice_model'
 import { FileUpload } from 'graphql-upload-ts'
@@ -14,12 +14,31 @@ export default class InvoiceService {
     this.port = Number(process.env.GRAPHQL_INVOICE_PORT) || 8080
   }
 
-  async getInvoices(pageSize: number, page: number): Promise<Invoice[]> {
-    const result = await axios.get(
+  async getInvoices(
+    pageSize: number,
+    page: number,
+  ): Promise<{
+    invoices: Invoice[]
+    currentPage: string
+    maxPages: string
+    pageSizeHeader: string
+  }> {
+    const result = await axios.get<Invoice[]>(
       `http://${this.url}:${this.port}/invoice/service?pageSize=${pageSize}&page=${page}`,
     )
 
-    return result.data
+    const headers = result.headers
+
+    const currentPage = headers['x-current-page']
+    const maxPages = headers['x-max-pages']
+    const pageSizeHeader = headers['x-page-size']
+
+    return {
+      invoices: result.data,
+      currentPage,
+      maxPages,
+      pageSizeHeader,
+    }
   }
 
   async getInvoiceById(id: number): Promise<Invoice> {

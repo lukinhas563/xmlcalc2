@@ -83,3 +83,18 @@ export class Invoice {
   @Field(() => Float)
   total: number
 }
+
+@ObjectType()
+export class Page {
+  @Field(() => [Invoice])
+  invoices: Invoice[]
+
+  @Field(() => String)
+  currentPage: string
+
+  @Field(() => String)
+  maxPages: string
+
+  @Field(() => String)
+  pageSize: string
+}
