@@ -2,8 +2,8 @@ import { useQuery } from 'urql'
 import { Invoice } from '../../../shared/types/getInvoice'
 
 const GetInvoices = `#graphql
-    query GetInvoices {
-        invoices {
+    query GetInvoices($pageSize: Int!, $page: Int!) {
+        invoices(pageSize: $pageSize, page: $page) {
             id
             info {
                 key
@@ -23,6 +23,9 @@ const GetInvoices = `#graphql
     }  
 `
 
-export function useGetInvoices() {
-    return useQuery<{ invoices: Invoice[] }>({ query: GetInvoices })
+export function useGetInvoices(pageSize: number, page: number) {
+    return useQuery<{ invoices: Invoice[] }>({
+        query: GetInvoices,
+        variables: { pageSize, page },
+    })
 }

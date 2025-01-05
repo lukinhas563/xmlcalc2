@@ -10,7 +10,10 @@ import TLine from '../../common/TLine'
 import Upload from '../../common/Upload'
 
 export default function Home() {
-    const [{ data, fetching, error }, reexecuteQuery] = useGetInvoices()
+    const PAGESIZE = 5
+
+    const [page, setPage] = useState(0)
+    const [{ data, fetching, error }, reexecuteQuery] = useGetInvoices(PAGESIZE, page)
     const [modalOpen, setModalOpen] = useState(false)
 
     if (fetching) {
@@ -26,6 +29,24 @@ export default function Home() {
     }
 
     const invoices = data.invoices
+
+    const handlePageUp = () => {
+        const newPage = page + PAGESIZE
+   
+        setPage(newPage)
+        reexecuteQuery()
+    }
+
+    const handlePageDown = () => {
+        if (page === 0) {
+            return
+        }
+
+        const newPage = page - PAGESIZE
+   
+        setPage(newPage)
+        reexecuteQuery()
+    }
 
     return (
         <Container>
@@ -49,7 +70,7 @@ export default function Home() {
                         )
                     })}
                 </tbody>
-                <TFooter colSpan={3} onClick={() => setModalOpen(true)} />
+                <TFooter colSpan={3} onClick={() => setModalOpen(true)} onPageUp={handlePageUp} onPageDown={handlePageDown} isDownDisable={page === 0 ? true : false}/>
             </Table>
 
             <Modal
