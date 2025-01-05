@@ -14,9 +14,9 @@ export default class InvoiceService {
     this.port = Number(process.env.GRAPHQL_INVOICE_PORT) || 8080
   }
 
-  async getInvoices(): Promise<Invoice[]> {
+  async getInvoices(pageSize: number, page: number): Promise<Invoice[]> {
     const result = await axios.get(
-      `http://${this.url}:${this.port}/invoice/service`,
+      `http://${this.url}:${this.port}/invoice/service?pageSize=${pageSize}&page=${page}`,
     )
 
     return result.data

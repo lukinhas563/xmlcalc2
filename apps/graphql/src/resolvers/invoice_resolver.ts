@@ -1,5 +1,13 @@
 import { Invoice } from '../dtos/models/invoice_model'
-import { Arg, Int, Mutation, Query, Resolver, Subscription } from 'type-graphql'
+import {
+  Arg,
+  Args,
+  Int,
+  Mutation,
+  Query,
+  Resolver,
+  Subscription,
+} from 'type-graphql'
 import { FileUpload, GraphQLUpload } from 'graphql-upload-ts'
 import { pubsub } from '../pubsub'
 import { Inject, Service } from 'typedi'
@@ -12,8 +20,11 @@ export default class InvoiceResolvers {
   private readonly invoiceService: InvoiceService
 
   @Query(() => [Invoice])
-  async invoices() {
-    const invoices = await this.invoiceService.getInvoices()
+  async invoices(
+    @Arg('pageSize', () => Int) pageSize: number,
+    @Arg('page', () => Int) page: number,
+  ) {
+    const invoices = await this.invoiceService.getInvoices(pageSize, page)
     return invoices
   }
 
