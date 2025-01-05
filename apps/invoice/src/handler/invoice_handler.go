@@ -21,7 +21,26 @@ type invoiceHandler struct {
 }
 
 func (handler *invoiceHandler) GetServiceInvoices(ctx *gin.Context) {
-	invoices, err := handler.domain.GetAllServiceInvoices()
+	pageSizeString := ctx.Query("pageSize")
+	pageString := ctx.Query("page")
+
+	pageSize, err := strconv.Atoi(pageSizeString)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"err": "PageSize is not a number",
+		})
+		return
+	}
+
+	page, err := strconv.Atoi(pageString)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"err": "Page is not a number",
+		})
+		return
+	}
+
+	invoices, err := handler.domain.GetAllServiceInvoices(pageSize, page)
 	if err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{
 			"hello": "erro to get all invoices",

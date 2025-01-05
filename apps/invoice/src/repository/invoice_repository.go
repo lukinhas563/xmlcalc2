@@ -14,7 +14,7 @@ type InvoiceRepository interface {
 	InsertPerson(person entities.Person, addresId int64) (int64, error)
 	InsertService(service entities.Service) (int64, error)
 	InsertInvoice(invoice entities.Invoice) (int64, error)
-	GetAllInvoices() ([]*entities.Invoice, error)
+	GetAllInvoices(pageSize int, page int) ([]*entities.Invoice, error)
 	GetInvoiceById(invoiceId int) (*entities.Invoice, error)
 	DeleteInvoiceById(invoiceId int) error
 	InsertXML(name, xml string, invoiceId int64) (int64, error)
@@ -159,7 +159,7 @@ func (repository *invoiceRepository) InsertInvoice(invoice entities.Invoice) (in
 	return invoiceResult.LastInsertId()
 }
 
-func (repository *invoiceRepository) GetAllInvoices() ([]*entities.Invoice, error) {
+func (repository *invoiceRepository) GetAllInvoices(pageSize int, page int) ([]*entities.Invoice, error) {
 	query := `
 		SELECT 
 		-- Id da invoice
@@ -209,10 +209,13 @@ func (repository *invoiceRepository) GetAllInvoices() ([]*entities.Invoice, erro
 		INNER JOIN addresses AS addresses ON persons.address_id = addresses.id
 		INNER JOIN persons AS recipient ON invoices.recipient_id = recipient.id
 		INNER JOIN addresses AS recipient_address ON recipient.address_id = recipient_address.id
-		INNER JOIN services ON invoices.service_id = services.id;
+		INNER JOIN services ON invoices.service_id = services.id
+
+		-- Paginação
+		LIMIT ? OFFSET ?;
 	`
 
-	result, err := repository.database.Query(query)
+	result, err := repository.database.Query(query, pageSize, page)
 	if err != nil {
 		return nil, err
 	}
